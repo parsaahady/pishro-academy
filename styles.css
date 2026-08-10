@@ -104,6 +104,17 @@ h2 em, h1 em { color: transparent; background: linear-gradient(110deg, var(--ora
 .hero::before { content: ''; position: absolute; width: 510px; height: 510px; top: 80px; right: -240px; border: 1px solid rgba(57,201,255,.13); border-radius: 50%; box-shadow: 0 0 0 45px rgba(57,201,255,.025), 0 0 0 90px rgba(57,201,255,.018); pointer-events: none; }
 .hero-copy { max-width: 575px; padding-bottom: 24px; }
 .hero-copy h1 { margin: 20px 0 19px; font-size: clamp(3.6rem, 6.2vw, 6.9rem); line-height: .98; font-weight: 900; }
+.hero-word-mark { display: inline-block; color: var(--orange); text-shadow:
+  0 1px 0 #ff8a4a,
+  0 2px 0 #e85d22,
+  0 3px 0 #cc4d1c,
+  0 4px 0 #b84318,
+  0 5px 0 #a03914,
+  0 6px 12px rgba(204, 77, 28, 0.4),
+  0 12px 24px rgba(0, 0, 0, 0.3),
+  0 20px 40px rgba(0, 0, 0, 0.2);
+  transform: perspective(600px) rotateX(8deg) rotateY(-3deg);
+  filter: drop-shadow(0 20px 35px rgba(255, 111, 47, 0.25)); }
 .hero-lead { max-width: 510px; color: var(--muted); font-size: 1rem; line-height: 2.05; margin-bottom: 30px; }
 .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
 .hero-proof { display: flex; align-items: center; gap: 12px; margin-top: 43px; color: #d9e9ed; }
