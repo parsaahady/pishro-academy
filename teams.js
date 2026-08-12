@@ -32,14 +32,17 @@ filters.forEach((button) => button.addEventListener('click', () => {
   });
 }));
 
-const rosterKeys = ['kids', 'junior', 'women', 'adult', 'pro'];
-const totalPlayers = rosterKeys.reduce((total, key) => {
-  try { return total + JSON.parse(localStorage.getItem(`pishro_roster_${key}`) || '[]').length; } catch (error) { return total; }
-}, 0);
-$('#directoryPlayerCount').textContent = faDigits(totalPlayers);
-window.addEventListener('storage', () => {
-  const total = rosterKeys.reduce((sum, key) => {
-    try { return sum + JSON.parse(localStorage.getItem(`pishro_roster_${key}`) || '[]').length; } catch (error) { return sum; }
-  }, 0);
-  $('#directoryPlayerCount').textContent = faDigits(total);
-});
+async function refreshDirectoryStats() {
+  const countElement = $('#directoryPlayerCount');
+  if (!countElement || !window.PishroAPI) return;
+  try {
+    const response = await PishroAPI.getStats();
+    countElement.textContent = faDigits(response.total_players || 0);
+  } catch (error) {
+    console.warn('Directory statistics are not available yet.', error);
+    countElement.textContent = '۰';
+  }
+}
+refreshDirectoryStats();
+window.addEventListener('pishro-roster-updated', refreshDirectoryStats);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshDirectoryStats(); });

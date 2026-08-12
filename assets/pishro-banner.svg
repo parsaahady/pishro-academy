@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Pishro Hockey Academy</title>
+  <desc id="desc">Animated orange and blue hockey themed banner for Pishro Academy</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071015"/>
+      <stop offset=".56" stop-color="#102d3b"/>
+      <stop offset="1" stop-color="#071015"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" x2="1">
+      <stop stop-color="#ffb486"/>
+      <stop offset=".45" stop-color="#ff6f2f"/>
+      <stop offset="1" stop-color="#b7351b"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" x2="1">
+      <stop stop-color="#a7f1ff"/>
+      <stop offset=".45" stop-color="#30c8ff"/>
+      <stop offset="1" stop-color="#176da7"/>
+    </linearGradient>
+    <filter id="glowOrange" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="9" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowBlue" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="iceGrid" width="38" height="38" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
+      <path d="M0 0H38M0 0V38" fill="none" stroke="#b8eff7" stroke-opacity=".08"/>
+    </pattern>
+    <clipPath id="clip"><rect width="1200" height="360" rx="28"/></clipPath>
+  </defs>
+  <g clip-path="url(#clip)">
+    <rect width="1200" height="360" fill="url(#bg)"/>
+    <rect width="1200" height="360" fill="url(#iceGrid)" opacity=".65"/>
+    <circle cx="1010" cy="32" r="210" fill="#30c8ff" fill-opacity=".09">
+      <animate attributeName="r" values="180;225;180" dur="7s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values=".06;.16;.06" dur="7s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="90" cy="360" r="220" fill="#ff6f2f" fill-opacity=".1">
+      <animate attributeName="r" values="205;245;205" dur="6s" repeatCount="indefinite"/>
+    </circle>
+    <g opacity=".35" fill="none" stroke="#7be8ff">
+      <ellipse cx="950" cy="180" rx="270" ry="115" stroke-opacity=".22" transform="rotate(-17 950 180)">
+        <animateTransform attributeName="transform" type="rotate" from="-17 950 180" to="343 950 180" dur="18s" repeatCount="indefinite"/>
+      </ellipse>
+      <ellipse cx="950" cy="180" rx="220" ry="88" stroke-opacity=".18" transform="rotate(-17 950 180)">
+        <animateTransform attributeName="transform" type="rotate" from="-17 950 180" to="343 950 180" dur="15s" repeatCount="indefinite"/>
+      </ellipse>
+    </g>
+    <g fill="none" stroke-linecap="round">
+      <path d="M-50 290 C220 160 300 310 530 210 S900 120 1260 250" stroke="url(#orange)" stroke-width="3" stroke-opacity=".75"/>
+      <path d="M-80 315 C200 185 320 335 555 235 S900 145 1270 270" stroke="url(#blue)" stroke-width="2" stroke-opacity=".72"/>
+      <path d="M-120 335 C180 205 340 350 585 255 S950 170 1310 290" stroke="#e7fbff" stroke-width="1" stroke-opacity=".22"/>
+    </g>
+    <g filter="url(#glowOrange)">
+      <circle cx="1000" cy="250" r="7" fill="#ff8854">
+        <animate attributeName="cx" values="1010;720;1010" dur="5s" repeatCount="indefinite"/>
+        <animate attributeName="cy" values="250;205;250" dur="5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    <g font-family="Arial, Helvetica, sans-serif" text-anchor="middle">
+      <text x="395" y="150" fill="#8deaff" fill-opacity=".7" font-size="16" letter-spacing="7">PISHRO / HOCKEY ACADEMY</text>
+      <text x="395" y="222" fill="url(#orange)" font-size="82" font-weight="900" letter-spacing="4">PISHRO</text>
+      <text x="395" y="260" fill="#edfaff" fill-opacity=".8" font-size="17" letter-spacing="5">SKATING · INLINE HOCKEY · ICE HOCKEY</text>
+    </g>
+    <g transform="translate(910 120)" fill="none" stroke="url(#orange)" stroke-width="3" opacity=".95">
+      <path d="M0 34 L30 8 L60 34 L49 84 Q30 103 11 84 Z"/>
+      <path d="M14 45 Q30 17 46 45 L41 72 Q30 88 19 72 Z" stroke="url(#blue)"/>
+      <circle cx="24" cy="52" r="2" fill="#fff" stroke="none"/><circle cx="36" cy="52" r="2" fill="#fff" stroke="none"/>
+      <path d="M24 65 Q30 70 36 65" stroke="#fff"/>
+    </g>
+    <text x="1090" y="320" fill="#d9f8ff" fill-opacity=".55" font-family="Arial, Helvetica, sans-serif" font-size="13" letter-spacing="3" text-anchor="end">MOVE · CONTROL · PLAY</text>
+  </g>
+  <rect x="1" y="1" width="1198" height="358" rx="28" fill="none" stroke="#83e9ff" stroke-opacity=".24"/>
+</svg>

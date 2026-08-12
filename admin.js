@@ -1,20 +1,21 @@
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 const faDigits = (value) => String(value).replace(/[0-9]/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[digit]);
-const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[character]));
+const escapeHTML = (value = '') => String(value).replace(/[&<>\'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[character]));
 
 const teams = {
-  kids: { no: '۰۱', title: 'ببرهای کوچک', category: '۶ تا ۹ سال', discipline: 'اسکیت هاکی', image: 'assets/gallery/team-kids.png' },
-  junior: { no: '۰۲', title: 'نوجوانان پیشرو', category: '۱۰ تا ۱۵ سال', discipline: 'اسکیت هاکی', image: 'assets/gallery/team-junior-action.jpg' },
-  women: { no: '۰۳', title: 'بانوان پیشرو', category: 'رده بانوان', discipline: 'هاکی روی یخ', image: 'assets/gallery/team-women.png' },
-  adult: { no: '۰۴', title: 'تیم بزرگسالان', category: '۱۶ سال به بالا', discipline: 'هاکی روی یخ', image: 'assets/gallery/team-champions.jpg' },
-  pro: { no: '۰۵', title: 'مسیر قهرمانی', category: 'استعدادیابی', discipline: 'اسکیت هاکی و هاکی روی یخ', image: 'assets/gallery/ice-action.jpg' }
+  kids: { no: '۰۱', title: 'ببرهای کوچک', category: '۶ تا ۹ سال', discipline: 'اسکیت هاکی' },
+  junior: { no: '۰۲', title: 'نوجوانان پیشرو', category: '۱۰ تا ۱۵ سال', discipline: 'اسکیت هاکی' },
+  women: { no: '۰۳', title: 'بانوان پیشرو', category: 'رده بانوان', discipline: 'هاکی روی یخ' },
+  adult: { no: '۰۴', title: 'تیم بزرگسالان', category: '۱۶ سال به بالا', discipline: 'هاکی روی یخ' },
+  pro: { no: '۰۵', title: 'مسیر قهرمانی', category: 'استعدادیابی', discipline: 'اسکیت هاکی و هاکی روی یخ' }
 };
 
 let activeTeamKey = 'kids';
 let activePlayers = [];
+let teamCounts = {};
 let editingId = null;
-let currentPhotoData = '';
+let removeExistingPhoto = false;
 let toastTimer;
 
 const topbar = $('#topbar');
@@ -34,42 +35,30 @@ menuToggle?.addEventListener('click', () => {
 });
 $$('.main-nav a').forEach((link) => link.addEventListener('click', () => mainNav?.classList.remove('open')));
 
-function rosterKey(key) { return `pishro_roster_${key}`; }
-function getPlayers(key) {
-  try { return JSON.parse(localStorage.getItem(rosterKey(key)) || '[]'); } catch (error) { return []; }
+function showToast(title, text) {
+  $('#adminToastTitle').textContent = title;
+  $('#adminToastText').textContent = text;
+  $('#adminToast').classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $('#adminToast').classList.remove('show'), 4300);
 }
-function savePlayers(key, players) {
-  try {
-    localStorage.setItem(rosterKey(key), JSON.stringify(players));
-    return true;
-  } catch (error) {
-    showToast('ذخیره انجام نشد', 'حافظه مرورگر پر شده است؛ حجم عکس را کمتر کنید.');
-    return false;
-  }
-}
-function allPlayerCount() { return Object.keys(teams).reduce((total, key) => total + getPlayers(key).length, 0); }
-function createId() { return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`; }
-function initials(name) { return (String(name || '').trim().split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('') || 'P').toUpperCase(); }
 
 function updateOverview() {
   const team = teams[activeTeamKey];
   $('#adminActiveTeamName').textContent = team.title;
   $('#adminActiveCount').textContent = faDigits(activePlayers.length);
-  $('#adminTotalCount').textContent = faDigits(allPlayerCount());
+  $('#adminTotalCount').textContent = faDigits(Object.values(teamCounts).reduce((sum, count) => sum + count, 0));
   $('#adminTeamKicker').textContent = `TEAM / ${team.no}`;
   $('#adminTeamTitle').textContent = team.title;
 }
 
 function renderTeamList() {
-  $('#adminTeamList').innerHTML = Object.entries(teams).map(([key, team]) => {
-    const count = getPlayers(key).length;
-    return `<button type="button" class="admin-team-button ${key === activeTeamKey ? 'active' : ''}" data-admin-team="${key}"><span class="admin-team-number">${team.no}</span><span><b>${team.title}</b><small>${team.category}</small></span><strong>${faDigits(count)}</strong></button>`;
-  }).join('');
+  $('#adminTeamList').innerHTML = Object.entries(teams).map(([key, team]) => `<button type="button" class="admin-team-button ${key === activeTeamKey ? 'active' : ''}" data-admin-team="${key}"><span class="admin-team-number">${team.no}</span><span><b>${team.title}</b><small>${team.category}</small></span><strong>${faDigits(teamCounts[key] || 0)}</strong></button>`).join('');
 }
 
 function renderRoster() {
   const term = ($('#adminSearch')?.value || '').trim().toLowerCase();
-  const filtered = activePlayers.filter((player) => [player.name, player.position, player.ageGroup, player.number, player.bio].join(' ').toLowerCase().includes(term));
+  const filtered = activePlayers.filter((player) => [player.name, player.position, player.age_group, player.jersey_number, player.bio].join(' ').toLowerCase().includes(term));
   const empty = $('#adminEmpty');
   const grid = $('#adminRosterGrid');
   empty.classList.toggle('visible', activePlayers.length === 0);
@@ -80,24 +69,33 @@ function renderRoster() {
     return;
   }
   grid.innerHTML = filtered.map((player, index) => {
-    const image = player.photo ? `<img src="${player.photo}" alt="${escapeHTML(player.name)}" />` : `<div class="player-initials">${escapeHTML(initials(player.name))}</div>`;
-    const number = player.number ? faDigits(player.number) : '—';
+    const visual = player.image_url ? `<img src="${escapeHTML(player.image_url)}" alt="${escapeHTML(player.name)}" />` : `<div class="player-initials">${escapeHTML(initials(player.name))}</div>`;
+    const number = player.jersey_number !== null && player.jersey_number !== undefined ? faDigits(player.jersey_number) : '—';
     const age = player.age ? `${faDigits(player.age)} سال` : '—';
-    const experience = player.experience ? `${faDigits(player.experience)} سال` : '—';
+    const experience = `${faDigits(player.years_active || 0)} سال`;
     const position = player.position || 'بازیکن';
-    const group = player.ageGroup || teams[activeTeamKey].category;
-    return `<article class="admin-player-card" data-player-id="${escapeHTML(player.id)}"><div class="admin-player-card-image">${image}<span class="player-card-number">${number}</span><span class="player-card-position">${escapeHTML(position)}</span></div><div class="admin-player-card-body"><div class="player-card-kicker">PLAYER / ${faDigits(String(index + 1).padStart(2, '0'))}</div><h3>${escapeHTML(player.name)}</h3><div class="admin-player-mini-meta"><span>${age}</span><span>${experience} فعالیت</span><span>${escapeHTML(group)}</span></div><p>${escapeHTML(player.bio || 'بدون توضیحات تکمیلی')}</p><div class="admin-player-actions"><button class="player-edit" data-admin-action="edit">ویرایش <span>↗</span></button><button class="player-delete" data-admin-action="delete">حذف</button></div></div></article>`;
+    const group = player.age_group || teams[activeTeamKey].category;
+    return `<article class="admin-player-card" data-player-id="${escapeHTML(player.id)}"><div class="admin-player-card-image">${visual}<span class="player-card-number">${number}</span><span class="player-card-position">${escapeHTML(position)}</span></div><div class="admin-player-card-body"><div class="player-card-kicker">PLAYER / ${faDigits(String(index + 1).padStart(2, '0'))}</div><h3>${escapeHTML(player.name)}</h3><div class="admin-player-mini-meta"><span>${age}</span><span>${experience} فعالیت</span><span>${escapeHTML(group)}</span></div><p>${escapeHTML(player.bio || 'بدون توضیحات تکمیلی')}</p><div class="admin-player-actions"><button class="player-edit" data-admin-action="edit">ویرایش <span>↗</span></button><button class="player-delete" data-admin-action="delete">حذف</button></div></div></article>`;
   }).join('');
 }
 
-function refreshAdmin() {
-  activePlayers = getPlayers(activeTeamKey);
-  renderTeamList();
-  updateOverview();
-  renderRoster();
+async function refreshAdmin() {
+  try {
+    const [rosterResponse, statsResponse] = await Promise.all([
+      PishroAPI.getAdminPlayers(activeTeamKey),
+      PishroAPI.getStats(),
+    ]);
+    activePlayers = rosterResponse.players || [];
+    teamCounts = Object.fromEntries((statsResponse.teams || []).map((team) => [team.slug, Number(team.player_count || 0)]));
+    renderTeamList();
+    updateOverview();
+    renderRoster();
+  } catch (error) {
+    console.error(error);
+    showToast('اتصال برقرار نشد', 'اطلاعات پنل از سرور دریافت نشد. تنظیمات دیتابیس را بررسی کنید.');
+  }
 }
 
-// Login guard. The session is kept only in this browser tab.
 function showDashboard() {
   loginView.hidden = true;
   dashboardView.hidden = false;
@@ -107,27 +105,43 @@ function showLogin() {
   loginView.hidden = false;
   dashboardView.hidden = true;
 }
-if (sessionStorage.getItem('pishro_admin_session') === 'active') showDashboard();
-else showLogin();
 
-$('#adminLoginForm')?.addEventListener('submit', (event) => {
+async function bootstrapAuth() {
+  try {
+    const response = await PishroAPI.me();
+    if (response.authenticated) showDashboard();
+    else showLogin();
+  } catch (error) {
+    showLogin();
+    $('#loginError').textContent = 'ارتباط با سرور برقرار نشد. تنظیمات هاست و دیتابیس را بررسی کنید.';
+    $('#loginError').classList.add('visible');
+  }
+}
+bootstrapAuth();
+
+$('#adminLoginForm')?.addEventListener('submit', async (event) => {
   event.preventDefault();
   const form = new FormData(event.target);
-  const username = String(form.get('username') || '').trim();
-  const password = String(form.get('password') || '');
-  const valid = typeof PISHRO_ADMIN_CONFIG !== 'undefined' && username === PISHRO_ADMIN_CONFIG.username && password === PISHRO_ADMIN_CONFIG.password;
   const error = $('#loginError');
-  if (!valid) { error.classList.add('visible'); return; }
   error.classList.remove('visible');
-  sessionStorage.setItem('pishro_admin_session', 'active');
-  event.target.reset();
-  showDashboard();
+  try {
+    await PishroAPI.login(String(form.get('username') || '').trim(), String(form.get('password') || ''));
+    event.target.reset();
+    showDashboard();
+  } catch (requestError) {
+    error.textContent = requestError.status === 429 ? 'تعداد تلاش‌ها زیاد است. چند دقیقه بعد دوباره امتحان کنید.' : 'نام کاربری یا رمز عبور صحیح نیست.';
+    error.classList.add('visible');
+  }
 });
 $('#togglePassword')?.addEventListener('click', () => {
   const input = $('#adminPassword');
   input.type = input.type === 'password' ? 'text' : 'password';
 });
-$('#logoutButton')?.addEventListener('click', () => { sessionStorage.removeItem('pishro_admin_session'); showLogin(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+$('#logoutButton')?.addEventListener('click', async () => {
+  try { await PishroAPI.logout(); } catch (error) { console.error(error); }
+  showLogin();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 
 $('#adminTeamList')?.addEventListener('click', (event) => {
   const button = event.target.closest('[data-admin-team]');
@@ -138,16 +152,25 @@ $('#adminTeamList')?.addEventListener('click', (event) => {
 });
 $('#adminSearch')?.addEventListener('input', renderRoster);
 
+function initials(name) {
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  return (parts.slice(0, 2).map((part) => part[0]).join('') || 'P').toUpperCase();
+}
+
+function showPhotoPreview(url = '') {
+  photoPreview.innerHTML = url ? `<img src="${escapeHTML(url)}" alt="پیش‌نمایش تصویر بازیکن" /><button type="button" id="removeAdminPhoto">حذف عکس</button>` : '';
+}
+
 function openPlayerModal(player = null) {
   editingId = player?.id || null;
-  currentPhotoData = player?.photo || '';
+  removeExistingPhoto = false;
   playerForm.reset();
   playerForm.elements.playerId.value = player?.id || '';
   if (player) {
     ['name', 'number', 'age', 'experience', 'position', 'ageGroup', 'bio'].forEach((field) => { if (playerForm.elements[field]) playerForm.elements[field].value = player[field] || ''; });
   }
   $('#adminPlayerModalTitle').innerHTML = player ? 'ویرایش بازیکن<br /><span>و ذخیره تغییرات.</span>' : 'افزودن بازیکن<br /><span>به فهرست تیم.</span>';
-  photoPreview.innerHTML = currentPhotoData ? `<img src="${currentPhotoData}" alt="پیش‌نمایش تصویر بازیکن" /><button type="button" id="removeAdminPhoto">حذف عکس</button>` : '';
+  showPhotoPreview(player?.image_url || '');
   playerModal.classList.add('open');
   playerModal.setAttribute('aria-hidden', 'false');
   document.body.classList.add('modal-open');
@@ -158,7 +181,7 @@ function closePlayerModal() {
   playerModal.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('modal-open');
   editingId = null;
-  currentPhotoData = '';
+  removeExistingPhoto = false;
 }
 $('#adminAddPlayerButton')?.addEventListener('click', () => openPlayerModal());
 $('#adminEmptyAdd')?.addEventListener('click', () => openPlayerModal());
@@ -170,68 +193,51 @@ document.addEventListener('keydown', (event) => { if (event.key === 'Escape') cl
 playerPhotoInput?.addEventListener('change', () => {
   const file = playerPhotoInput.files?.[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    const image = new Image();
-    image.onload = () => {
-      const max = 560;
-      const scale = Math.min(1, max / Math.max(image.width, image.height));
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.max(1, Math.round(image.width * scale));
-      canvas.height = Math.max(1, Math.round(image.height * scale));
-      canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
-      currentPhotoData = canvas.toDataURL('image/jpeg', .76);
-      photoPreview.innerHTML = `<img src="${currentPhotoData}" alt="پیش‌نمایش تصویر بازیکن" /><button type="button" id="removeAdminPhoto">حذف عکس</button>`;
-    };
-    image.onerror = () => showToast('خطا در تصویر', 'لطفاً یک فایل تصویری معتبر انتخاب کنید.');
-    image.src = reader.result;
-  };
-  reader.readAsDataURL(file);
+  removeExistingPhoto = false;
+  showPhotoPreview(URL.createObjectURL(file));
 });
 photoPreview?.addEventListener('click', (event) => {
   if (event.target.id !== 'removeAdminPhoto') return;
-  currentPhotoData = '';
   playerPhotoInput.value = '';
-  photoPreview.innerHTML = '';
+  removeExistingPhoto = Boolean(editingId);
+  showPhotoPreview('');
 });
 
-playerForm?.addEventListener('submit', (event) => {
+playerForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
   const wasEditing = Boolean(editingId);
   const formData = new FormData(playerForm);
-  const data = Object.fromEntries(formData.entries());
-  delete data.photo;
-  const existing = activePlayers.find((player) => player.id === editingId);
-  const player = { ...data, id: editingId || createId(), photo: currentPhotoData || existing?.photo || '', updatedAt: new Date().toISOString() };
-  const nextPlayers = wasEditing ? activePlayers.map((item) => item.id === editingId ? player : item) : [player, ...activePlayers];
-  if (!savePlayers(activeTeamKey, nextPlayers)) return;
-  activePlayers = nextPlayers;
-  closePlayerModal();
-  refreshAdmin();
-  showToast(wasEditing ? 'اطلاعات به‌روزرسانی شد' : 'بازیکن اضافه شد', wasEditing ? 'تغییرات در صفحه عمومی هم اعمال شد.' : 'پروفایل بازیکن ساخته شد.');
+  formData.set('id', editingId ? String(editingId) : '');
+  formData.set('team', activeTeamKey);
+  if (removeExistingPhoto) formData.set('remove_image', '1');
+  try {
+    await PishroAPI.savePlayer(formData);
+    closePlayerModal();
+    await refreshAdmin();
+    window.dispatchEvent(new CustomEvent('pishro-roster-updated'));
+    showToast(wasEditing ? 'اطلاعات به‌روزرسانی شد' : 'بازیکن اضافه شد', 'اطلاعات در دیتابیس ذخیره شد.');
+  } catch (error) {
+    console.error(error);
+    showToast('ذخیره انجام نشد', error.payload?.error || 'اطلاعات را بررسی کنید و دوباره تلاش کنید.');
+  }
 });
 
-$('#adminRosterGrid')?.addEventListener('click', (event) => {
+$('#adminRosterGrid')?.addEventListener('click', async (event) => {
   const action = event.target.closest('[data-admin-action]');
   if (!action) return;
   const card = action.closest('[data-player-id]');
-  const player = activePlayers.find((item) => item.id === card?.dataset.playerId);
+  const player = activePlayers.find((item) => String(item.id) === String(card?.dataset.playerId));
   if (!player) return;
   if (action.dataset.adminAction === 'edit') openPlayerModal(player);
   if (action.dataset.adminAction === 'delete') {
     if (!window.confirm(`اطلاعات ${player.name} حذف شود؟`)) return;
-    const nextPlayers = activePlayers.filter((item) => item.id !== player.id);
-    if (!savePlayers(activeTeamKey, nextPlayers)) return;
-    activePlayers = nextPlayers;
-    refreshAdmin();
-    showToast('بازیکن حذف شد', 'اطلاعات از فهرست این تیم حذف شد.');
+    try {
+      await PishroAPI.deletePlayer(player.id);
+      await refreshAdmin();
+      window.dispatchEvent(new CustomEvent('pishro-roster-updated'));
+      showToast('بازیکن حذف شد', 'اطلاعات از دیتابیس حذف شد.');
+    } catch (error) {
+      showToast('حذف انجام نشد', error.payload?.error || 'دوباره تلاش کنید.');
+    }
   }
 });
-
-function showToast(title, text) {
-  $('#adminToastTitle').textContent = title;
-  $('#adminToastText').textContent = text;
-  $('#adminToast').classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => $('#adminToast').classList.remove('show'), 4300);
-}

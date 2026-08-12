@@ -1,0 +1,6 @@
+api/config.php
+uploads/players/*
+!uploads/players/.gitkeep
+*.log
+.DS_Store
+Thumbs.db

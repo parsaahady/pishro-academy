@@ -4,28 +4,13 @@ const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)]
 const faDigits = (value) => String(value).replace(/[0-9]/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[digit]);
 const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[character]));
 
-// Public roster preview on the homepage. The admin panel writes to the same roster keys.
-const homeTeamMeta = {
-  kids: { title: 'ببرهای کوچک', category: '۶ تا ۹ سال', image: 'assets/gallery/team-kids.png' },
-  junior: { title: 'نوجوانان پیشرو', category: '۱۰ تا ۱۵ سال', image: 'assets/gallery/team-junior-action.jpg' },
-  women: { title: 'بانوان پیشرو', category: 'رده بانوان', image: 'assets/gallery/team-women.png' },
-  adult: { title: 'تیم بزرگسالان', category: '۱۶ سال به بالا', image: 'assets/gallery/team-champions.jpg' },
-  pro: { title: 'مسیر قهرمانی', category: 'استعدادیابی', image: 'assets/gallery/ice-action.jpg' }
-};
+// Public roster preview on the homepage. Data is read from the server database.
 const homePlayersGrid = $('#homePlayersGrid');
 const homePlayersEmpty = $('#homePlayersEmpty');
 const homePlayersCount = $('#homePlayersCount');
 const homeInitials = (name) => (String(name || '').trim().split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('') || 'P').toUpperCase();
-function readHomePlayers() {
-  return Object.entries(homeTeamMeta).flatMap(([teamKey, meta]) => {
-    try {
-      return JSON.parse(localStorage.getItem(`pishro_roster_${teamKey}`) || '[]').map((player) => ({ ...player, teamKey, team: meta }));
-    } catch (error) { return []; }
-  }).sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
-}
-function renderHomePlayers() {
+function renderHomePlayers(players = []) {
   if (!homePlayersGrid) return;
-  const players = readHomePlayers();
   if (homePlayersCount) homePlayersCount.textContent = faDigits(players.length);
   if (!players.length) {
     homePlayersGrid.innerHTML = '';
@@ -34,16 +19,26 @@ function renderHomePlayers() {
   }
   homePlayersEmpty?.classList.remove('visible');
   homePlayersGrid.innerHTML = players.slice(0, 6).map((player) => {
-    const visual = player.photo ? `<img src="${escapeHTML(player.photo)}" alt="${escapeHTML(player.name)}" />` : `<div class="home-player-initials">${escapeHTML(homeInitials(player.name))}</div>`;
-    const number = player.number ? faDigits(player.number) : '—';
+    const visual = player.image_url ? `<img src="${escapeHTML(player.image_url)}" alt="${escapeHTML(player.name)}" />` : `<div class="home-player-initials">${escapeHTML(homeInitials(player.name))}</div>`;
+    const number = player.jersey_number !== null && player.jersey_number !== undefined ? faDigits(player.jersey_number) : '—';
     const age = player.age ? `${faDigits(player.age)} سال` : '—';
-    const exp = player.experience ? `${faDigits(player.experience)} سال سابقه` : 'سابقه ثبت نشده';
-    return `<a class="home-player-card" href="team.html?team=${player.teamKey}"><div class="home-player-image">${visual}<span class="home-player-number">${number}</span><span class="home-player-position">${escapeHTML(player.position || 'بازیکن')}</span></div><div class="home-player-body"><div class="home-player-team">${escapeHTML(player.team.title)} · ${escapeHTML(player.team.category)}</div><h3>${escapeHTML(player.name)}</h3><div class="home-player-meta"><span>${age}</span><span>${escapeHTML(exp)}</span></div><span class="home-player-link">مشاهده پروفایل <b>←</b></span></div></a>`;
+    const exp = `${faDigits(player.years_active || 0)} سال سابقه`;
+    return `<a class="home-player-card" href="team.html?team=${encodeURIComponent(player.team_slug)}"><div class="home-player-image">${visual}<span class="home-player-number">${number}</span><span class="home-player-position">${escapeHTML(player.position || 'بازیکن')}</span></div><div class="home-player-body"><div class="home-player-team">${escapeHTML(player.team_name)} · ${escapeHTML(player.team_age_range)}</div><h3>${escapeHTML(player.name)}</h3><div class="home-player-meta"><span>${age}</span><span>${escapeHTML(exp)}</span></div><span class="home-player-link">مشاهده پروفایل <b>←</b></span></div></a>`;
   }).join('');
 }
-renderHomePlayers();
-window.addEventListener('storage', renderHomePlayers);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) renderHomePlayers(); });
+async function loadHomePlayers() {
+  if (!homePlayersGrid || !window.PishroAPI) return;
+  try {
+    const response = await PishroAPI.getPublicPlayers({ limit: 6 });
+    renderHomePlayers(response.players || []);
+  } catch (error) {
+    console.warn('Public roster is not available yet.', error);
+    renderHomePlayers([]);
+  }
+}
+loadHomePlayers();
+window.addEventListener('pishro-roster-updated', loadHomePlayers);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) loadHomePlayers(); });
 
 // Sticky header state
 const topbar = $('#topbar');
@@ -169,16 +164,36 @@ const showToast = () => {
   toastTimer = window.setTimeout(() => toast?.classList.remove('show'), 4800);
 };
 
-$('#modalForm')?.addEventListener('submit', (event) => {
+async function submitContactForm(form, payload, afterSuccess = () => {}) {
+  if (!window.PishroAPI) return;
+  try {
+    await PishroAPI.submitContact(payload);
+    form.reset();
+    afterSuccess();
+    showToast();
+  } catch (error) {
+    console.error(error);
+    window.alert('ارسال درخواست انجام نشد. لطفاً دوباره تلاش کنید.');
+  }
+}
+
+$('#modalForm')?.addEventListener('submit', async (event) => {
   event.preventDefault();
-  closeModal();
-  event.target.reset();
-  showToast();
+  const form = event.target;
+  await submitContactForm(form, {
+    name: form.elements.modalName.value,
+    phone: form.elements.modalPhone.value,
+    course: form.elements.modalPlan.value,
+  }, closeModal);
 });
-$('#contactForm')?.addEventListener('submit', (event) => {
+$('#contactForm')?.addEventListener('submit', async (event) => {
   event.preventDefault();
-  event.target.reset();
-  showToast();
+  const form = event.target;
+  await submitContactForm(form, {
+    name: form.elements.name.value,
+    phone: form.elements.phone.value,
+    course: form.elements.course.value,
+  });
 });
 
 // Map query button. The query stays editable and can later be replaced with a precise pin.

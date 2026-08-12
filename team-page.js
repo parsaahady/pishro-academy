@@ -1,7 +1,7 @@
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 const faDigits = (value) => String(value).replace(/[0-9]/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[digit]);
-const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[character]));
+const escapeHTML = (value = '') => String(value).replace(/[&<>\'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[character]));
 
 const teams = {
   kids: { no: '۰۱', title: 'ببرهای کوچک', english: 'LITTLE TIGERS', kicker: 'PISHRO TEAM / ۰۱', category: '۶ تا ۹ سال', discipline: 'اسکیت هاکی', image: 'assets/gallery/team-kids.png', description: 'اولین تجربه هاکی باید پر از بازی و کشف باشد. این صفحه برای نمایش اعضای تیم ببرهای کوچک، سن، سابقه و مشخصات هر بازیکن آماده شده است.' },
@@ -14,14 +14,8 @@ const teams = {
 const query = new URLSearchParams(window.location.search);
 const teamKey = query.get('team') && teams[query.get('team')] ? query.get('team') : 'kids';
 const team = teams[teamKey];
-const storageKey = `pishro_roster_${teamKey}`;
-let players = loadPlayers();
+let players = [];
 
-function loadPlayers() {
-  try { return JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch (error) { return []; }
-}
-
-// Common topbar behaviours
 const topbar = $('#topbar');
 const menuToggle = $('#menuToggle');
 const mainNav = $('#mainNav');
@@ -32,7 +26,6 @@ menuToggle?.addEventListener('click', () => {
 });
 $$('.main-nav a').forEach((link) => link.addEventListener('click', () => mainNav?.classList.remove('open')));
 
-// Fill the selected team page
 $('#rosterKicker').textContent = team.kicker;
 $('#rosterTitle').innerHTML = `${team.title}<br /><span>${team.english}</span>`;
 $('#rosterDescription').textContent = team.description;
@@ -65,7 +58,7 @@ function initials(name) {
 
 function renderPlayers() {
   const term = (searchInput?.value || '').trim().toLowerCase();
-  const filtered = players.filter((player) => [player.name, player.position, player.ageGroup, player.number, player.bio].join(' ').toLowerCase().includes(term));
+  const filtered = players.filter((player) => [player.name, player.position, player.age_group, player.jersey_number, player.bio].join(' ').toLowerCase().includes(term));
   rosterCount.textContent = faDigits(players.length);
   rosterEmpty.classList.toggle('visible', players.length === 0);
   if (!players.length) {
@@ -78,30 +71,28 @@ function renderPlayers() {
     return;
   }
   rosterGrid.innerHTML = filtered.map((player, index) => {
-    const image = player.photo ? `<img src="${player.photo}" alt="${escapeHTML(player.name)}" />` : `<div class="player-initials">${escapeHTML(initials(player.name))}</div>`;
-    const number = player.number ? faDigits(player.number) : '—';
+    const visual = player.image_url ? `<img src="${escapeHTML(player.image_url)}" alt="${escapeHTML(player.name)}" />` : `<div class="player-initials">${escapeHTML(initials(player.name))}</div>`;
+    const number = player.jersey_number !== null && player.jersey_number !== undefined ? faDigits(player.jersey_number) : '—';
     const age = player.age ? `${faDigits(player.age)} سال` : '—';
-    const experience = player.experience ? `${faDigits(player.experience)} سال سابقه` : 'سابقه ثبت نشده';
+    const experience = `${faDigits(player.years_active || 0)} سال سابقه`;
     const position = player.position || 'بازیکن';
-    const group = player.ageGroup || team.category;
-    return `<article class="player-card reveal is-visible">
-      <div class="player-card-image">${image}<span class="player-card-number">${number}</span><span class="player-card-position">${escapeHTML(position)}</span></div>
-      <div class="player-card-body"><div class="player-card-kicker">PLAYER / ${faDigits(String(index + 1).padStart(2, '0'))}</div><h3>${escapeHTML(player.name)}</h3><p>${escapeHTML(player.bio || 'برای این بازیکن هنوز توضیحی ثبت نشده است.')}</p><div class="player-card-meta"><span><b>${age}</b><small>سن</small></span><span><b>${escapeHTML(experience)}</b><small>فعالیت</small></span><span><b>${escapeHTML(group)}</b><small>رده</small></span></div></div>
-    </article>`;
+    const group = player.age_group || team.category;
+    return `<article class="player-card reveal is-visible"><div class="player-card-image">${visual}<span class="player-card-number">${number}</span><span class="player-card-position">${escapeHTML(position)}</span></div><div class="player-card-body"><div class="player-card-kicker">PLAYER / ${faDigits(String(index + 1).padStart(2, '0'))}</div><h3>${escapeHTML(player.name)}</h3><p>${escapeHTML(player.bio || 'برای این بازیکن هنوز توضیحی ثبت نشده است.')}</p><div class="player-card-meta"><span><b>${age}</b><small>سن</small></span><span><b>${escapeHTML(experience)}</b><small>فعالیت</small></span><span><b>${escapeHTML(group)}</b><small>رده</small></span></div></div></article>`;
   }).join('');
 }
 
+async function loadPlayers() {
+  if (!window.PishroAPI) return;
+  try {
+    const response = await PishroAPI.getPublicPlayers({ team: teamKey, limit: 100 });
+    players = response.players || [];
+  } catch (error) {
+    console.error('Could not load public players.', error);
+    players = [];
+  }
+  renderPlayers();
+}
 searchInput?.addEventListener('input', renderPlayers);
-window.addEventListener('storage', (event) => {
-  if (event.key === storageKey) {
-    players = loadPlayers();
-    renderPlayers();
-  }
-});
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) {
-    players = loadPlayers();
-    renderPlayers();
-  }
-});
-renderPlayers();
+window.addEventListener('pishro-roster-updated', loadPlayers);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) loadPlayers(); });
+loadPlayers();
