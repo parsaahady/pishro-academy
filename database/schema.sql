@@ -48,6 +48,69 @@ CREATE TABLE IF NOT EXISTS players (
     CONSTRAINT fk_players_team FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS coaches (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(120) NOT NULL,
+    role VARCHAR(120) NULL,
+    years_active TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    specialties VARCHAR(255) NULL,
+    bio TEXT NULL,
+    image_path VARCHAR(255) NULL,
+    is_published TINYINT(1) NOT NULL DEFAULT 1,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_coaches_published (is_published, sort_order, updated_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS blog_posts (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    slug VARCHAR(180) NOT NULL,
+    title VARCHAR(220) NOT NULL,
+    excerpt VARCHAR(500) NULL,
+    category VARCHAR(50) NOT NULL DEFAULT 'training',
+    content_html MEDIUMTEXT NOT NULL,
+    cover_path VARCHAR(255) NULL,
+    status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
+    author_id INT UNSIGNED NULL,
+    published_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_blog_slug (slug),
+    KEY idx_blog_status_published (status, published_at),
+    CONSTRAINT fk_blog_author FOREIGN KEY (author_id) REFERENCES admins(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS blog_images (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    post_id BIGINT UNSIGNED NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    alt_text VARCHAR(180) NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_blog_images_post (post_id, sort_order),
+    CONSTRAINT fk_blog_images_post FOREIGN KEY (post_id) REFERENCES blog_posts(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS comments (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    post_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(120) NOT NULL,
+    email VARCHAR(190) NULL,
+    body TEXT NOT NULL,
+    status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
+    ip_hash CHAR(64) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_comments_post_status (post_id, status, created_at),
+    KEY idx_comments_status (status, created_at),
+    CONSTRAINT fk_comments_post FOREIGN KEY (post_id) REFERENCES blog_posts(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS contact_messages (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(120) NOT NULL,

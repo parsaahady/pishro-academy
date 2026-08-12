@@ -125,7 +125,7 @@ $$('.team-row').forEach((row) => row.addEventListener('click', () => {
     if (teamTags) teamTags.innerHTML = data.tags.map((tag) => `<span>${tag}</span>`).join('');
     if (teamFeatureImage) {
       teamFeatureImage.src = data.image;
-      teamFeatureImage.alt = `تصویر ${data.title} آکادمی پیشرو`;
+      teamFeatureImage.alt = `تصویر ${data.title} پیشرو هاکی`;
     }
     [teamTitle, teamText, teamNumber].forEach((element) => element?.classList.remove('swap-out'));
   }, 160);

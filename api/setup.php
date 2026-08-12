@@ -37,6 +37,15 @@ if (!is_file($schemaPath)) {
 try {
     $pdo = db();
     $pdo->exec(file_get_contents($schemaPath));
+    try {
+        $pdo->exec("ALTER TABLE blog_posts ADD COLUMN category VARCHAR(50) NOT NULL DEFAULT 'training' AFTER excerpt");
+    } catch (Throwable $ignored) {
+        // The column already exists on an existing installation.
+    }
+    $seedPath = dirname(__DIR__) . '/database/seed.sql';
+    if (is_file($seedPath)) {
+        $pdo->exec(file_get_contents($seedPath));
+    }
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
     $stmt = $pdo->prepare(
         'INSERT INTO admins (username, display_name, password_hash) VALUES (?, ?, ?)

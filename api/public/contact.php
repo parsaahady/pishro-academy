@@ -6,6 +6,11 @@ if (request_method() !== 'POST') {
     error_response('Method not allowed.', 405);
 }
 
+$lastContact = (int)($_SESSION['last_contact_at'] ?? 0);
+if ($lastContact && time() - $lastContact < 20) {
+    error_response('Please wait before sending another request.', 429);
+}
+
 $data = input_json();
 $name = clean_string($data['name'] ?? $_POST['name'] ?? '', 120);
 $phone = clean_string($data['phone'] ?? $_POST['phone'] ?? '', 40);
@@ -21,5 +26,6 @@ if (strlen($phone) < 7) {
 
 $stmt = db()->prepare('INSERT INTO contact_messages (name, phone, course, message) VALUES (?, ?, ?, ?)');
 $stmt->execute([$name, $phone, $course !== '' ? $course : null, $message !== '' ? $message : null]);
+$_SESSION['last_contact_at'] = time();
 
 ok_response(['message' => 'Your request has been received.'], 201);

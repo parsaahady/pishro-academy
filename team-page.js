@@ -30,12 +30,12 @@ $('#rosterKicker').textContent = team.kicker;
 $('#rosterTitle').innerHTML = `${team.title}<br /><span>${team.english}</span>`;
 $('#rosterDescription').textContent = team.description;
 $('#rosterHeroImage').src = team.image;
-$('#rosterHeroImage').alt = `تصویر ${team.title} آکادمی پیشرو`;
+$('#rosterHeroImage').alt = `تصویر ${team.title} پیشرو هاکی`;
 $('#rosterHeroNumber').textContent = team.no;
 $('#rosterCategory').textContent = team.category;
 $('#rosterDiscipline').textContent = team.discipline;
 $('#rosterHeadingTeam').textContent = team.title;
-document.title = `${team.title} | بازیکنان آکادمی پیشرو`;
+document.title = `${team.title} | بازیکنان پیشرو هاکی`;
 
 const revealObserver = new IntersectionObserver((entries, observer) => {
   entries.forEach((entry) => {

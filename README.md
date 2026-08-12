@@ -1,14 +1,14 @@
 <div align="center">
-  <img src="assets/pishro-banner.svg" alt="Pishro Hockey Academy" width="100%" />
+  <img src="assets/pishro-banner.svg" alt="Pishro Hockey" width="100%" />
 
-  # 🐯 Pishro Hockey Academy
+  # 🐯 Pishro Hockey
 
   **Skating · Inline Hockey · Ice Hockey**
 
-  <p>A responsive academy website with public team pages, player profiles, galleries, training plans, and a database-backed admin panel.</p>
+  <p>Responsive RTL website with public teams, player profiles, coaching staff, a hockey blog, moderated comments, contact inbox, and a PHP/MySQL admin panel.</p>
 
   <a href="https://github.com/parsaahady/pishro-academy">
-    <img src="https://readme-typing-svg.demolab.com?font=Space+Grotesk&weight=700&size=22&pause=900&color=FF6F2F&center=true&vCenter=true&width=760&lines=Welcome+to+Pishro+Academy;Inline+Hockey+%C2%B7+Ice+Hockey;Move+%C2%B7+Control+%C2%B7+Play" alt="Animated Pishro Academy tagline" />
+    <img src="https://readme-typing-svg.demolab.com?font=Space+Grotesk&weight=700&size=22&pause=900&color=FF6F2F&center=true&vCenter=true&width=760&lines=Welcome+to+Pishro+Hockey;Inline+Hockey+%C2%B7+Ice+Hockey;Move+%C2%B7+Control+%C2%B7+Play" alt="Animated Pishro Hockey tagline" />
   </a>
 
   ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
@@ -22,51 +22,50 @@
 
 ## Overview
 
-Pishro Academy is a Persian RTL website for a skating and hockey academy. The project combines a static frontend with a PHP/MySQL backend for roster management, player images, admin authentication, and contact requests.
+Pishro Hockey is a Persian RTL website for a skating and hockey academy. It combines a polished static frontend with a PHP/MySQL backend for managing teams, players, coaches, blog content, comments, contact requests, and uploaded images.
 
-The public website contains the academy presentation, training programs, pricing plans, teams, achievements, location, equipment consultation, FAQ, and team galleries. The private admin panel manages player records stored in MySQL.
+The frontend is written in HTML, CSS, and vanilla JavaScript. The backend uses PDO, prepared statements, PHP sessions, password hashing, CSRF protection, server-side validation, and controlled image uploads.
 
 ## Features
 
 ### Public website
 
 - Responsive RTL layout for desktop, tablet, and mobile
-- Pishro tiger branding and academy logo
-- Animated hero banner and page transitions
-- Homepage quick navigation
-- Beginner skating, inline hockey, and ice hockey programs
+- Pishro tiger branding and academy photography
+- Animated hero, quick navigation, scroll effects, and image interactions
+- Training programs for beginner skating, inline hockey, and ice hockey
 - Training plans and pricing section
-- Team directory and dedicated team pages
-- Public player profiles with:
-  - Name
-  - Age
-  - Years of activity
-  - Jersey number
-  - Position
-  - Age group
-  - Biography
-  - Player image
-- Player search
-- Team and match photo galleries
-- Location section for the outdoor rink near Al-Ghadir Stadium
-- Consultation and contact forms
-- Homepage roster preview loaded from the backend API
+- Team directory and public player profiles
+- Coach directory with experience, specialties, biography, and image
+- Blog index with featured posts and category filters
+- Blog detail pages with:
+  - Rich article content
+  - Image albums
+  - Approved comments
+  - Share-link action
+- Moderated blog comments
+- Contact and consultation forms
+- Public roster preview on the homepage
+- Location, equipment, achievements, FAQ, and gallery sections
 
 ### Admin panel
 
-- Server-side login using PHP sessions
-- Password verification with `password_hash()` / `password_verify()`
+- Server-side login with secure PHP sessions
+- Password verification using `password_hash()` and `password_verify()`
+- Session-based login throttling
 - CSRF protection for admin write requests
-- Login rate limiting per session
-- Secure player creation, editing, and deletion
-- Server-side input validation
-- JPG, PNG, and WebP image validation
-- Maximum upload size enforcement
-- Randomized image filenames
-- Upload directory protected against script execution
-- Team-based roster management
-- Player image preview and removal
-- Database-backed roster statistics
+- Player management: create, edit, delete, search, and image upload
+- Coach management: create, edit, delete, and image upload
+- Blog editor with:
+  - Title, slug, category, excerpt, and publish status
+  - Rich text toolbar
+  - Server-sanitized HTML
+  - Cover image upload
+  - Multiple-image album upload
+  - Draft and published states
+- Contact inbox for consultation requests and selected plans
+- Comment moderation: pending, approved, rejected, and delete
+- Database-backed counters and public content
 
 ## Project Structure
 
@@ -75,17 +74,24 @@ pishro-academy/
 ├── index.html
 ├── teams.html
 ├── team.html
+├── coaches.html
+├── blog.html
+├── post.html
 ├── admin.html
 ├── styles.css
 ├── api-client.js
 ├── app.js
 ├── teams.js
 ├── team-page.js
+├── coaches.js
+├── blog.js
+├── post.js
 ├── admin.js
 ├── api/
 │   ├── config.example.php
 │   ├── bootstrap.php
 │   ├── auth.php
+│   ├── media.php
 │   ├── setup.php
 │   ├── auth/
 │   │   ├── login.php
@@ -94,17 +100,27 @@ pishro-academy/
 │   ├── public/
 │   │   ├── teams.php
 │   │   ├── players.php
-│   │   ├── stats.php
+│   │   ├── coaches.php
+│   │   ├── blogs.php
+│   │   ├── comments.php
 │   │   ├── contact.php
+│   │   ├── stats.php
+│   │   ├── media.php
 │   │   └── player-image.php
 │   └── admin/
-│       └── players.php
+│       ├── players.php
+│       ├── coaches.php
+│       ├── blogs.php
+│       ├── comments.php
+│       └── messages.php
 ├── database/
 │   ├── schema.sql
+│   ├── seed.sql
 │   └── .htaccess
 ├── uploads/
-│   └── players/
-│       └── .htaccess
+│   ├── players/
+│   ├── coaches/
+│   └── blogs/
 ├── assets/
 │   ├── pishro-banner.svg
 │   └── gallery/
@@ -118,11 +134,13 @@ pishro-academy/
 - MySQL 5.7+ or MariaDB 10.4+
 - Apache or Nginx
 - HTTPS in production
-- Writable `uploads/players` directory
+- Writable upload directories
+- `upload_max_filesize` of at least 4M
+- `post_max_size` of at least 8M
 
 ## Local Development
 
-The frontend can be viewed with a static server, but the admin panel and database API require PHP and MySQL.
+The frontend can be previewed with a static server, but the admin panel and database API require PHP and MySQL.
 
 ### Frontend preview only
 
@@ -136,27 +154,25 @@ Open:
 http://localhost:5500
 ```
 
-### Backend development
+### Full local setup
 
-Use a PHP-enabled local environment such as XAMPP, Laragon, MAMP, Docker, or a PHP development server.
-
-The database must be created and `api/config.php` must be configured before using the admin panel.
+Use a PHP/MySQL environment such as XAMPP, Laragon, MAMP, Docker, or a PHP-enabled hosting environment. Configure `api/config.php` before using the admin panel.
 
 ## Server Setup
 
 ### 1. Create the database
 
-Create a MySQL database and database user in cPanel or your hosting panel. Grant the user full permissions for the new database.
+Create a MySQL database and database user in cPanel or your hosting panel. Grant the user full permissions for the database.
 
 ### 2. Configure the API
 
-Copy the example configuration:
+Copy:
 
 ```text
 api/config.example.php → api/config.php
 ```
 
-Edit `api/config.php`:
+Then edit the database and application settings:
 
 ```php
 return [
@@ -172,6 +188,10 @@ return [
         'max_upload_bytes' => 3 * 1024 * 1024,
         'upload_dir' => dirname(__DIR__) . '/uploads/players',
         'upload_url' => 'uploads/players',
+        'blog_upload_dir' => dirname(__DIR__) . '/uploads/blogs',
+        'blog_upload_url' => 'uploads/blogs',
+        'coach_upload_dir' => dirname(__DIR__) . '/uploads/coaches',
+        'coach_upload_url' => 'uploads/coaches',
         'setup_enabled' => true,
         'setup_token' => 'replace-with-a-long-random-token',
     ],
@@ -182,30 +202,32 @@ return [
 
 ### 3. Upload the project
 
-Upload the contents of the project to the document root of the domain, usually:
+Upload the project contents to the domain document root, usually:
 
 ```text
 public_html/
 ```
 
-The following files must be directly inside the document root:
+Required paths:
 
 ```text
 public_html/index.html
 public_html/admin.html
 public_html/api/
 public_html/assets/
+public_html/uploads/
 ```
 
-### 4. Create the tables and first admin
+### 4. Create the database and first admin
 
-The schema is available at:
+The database tables and sample blog posts are defined in:
 
 ```text
 database/schema.sql
+database/seed.sql
 ```
 
-You can import it through phpMyAdmin. Alternatively, use the one-time setup endpoint after configuring `api/config.php`:
+You can import them through phpMyAdmin. Alternatively, run the one-time setup endpoint after configuring `api/config.php`:
 
 ```bash
 curl -X POST "https://your-domain.com/api/setup.php?token=YOUR_SETUP_TOKEN" \
@@ -217,7 +239,7 @@ After setup succeeds:
 
 1. Set `setup_enabled` to `false` in `api/config.php`.
 2. Delete `api/setup.php` from the server.
-3. Keep the admin password private.
+3. Keep the admin password and setup token private.
 
 ### 5. Set upload permissions
 
@@ -225,9 +247,11 @@ The web server must be able to write to:
 
 ```text
 uploads/players/
+uploads/coaches/
+uploads/blogs/
 ```
 
-The directory should not allow PHP or other scripts to execute. The included `.htaccess` file blocks common script extensions.
+Use `755` or `775` only when required by the host. The included `.htaccess` files block common script extensions inside upload directories.
 
 ## Admin Panel
 
@@ -237,18 +261,33 @@ Open:
 https://your-domain.com/admin.html
 ```
 
-The login is checked by the PHP backend. The browser does not contain the admin password.
+The admin login is checked by PHP. Credentials are not stored in frontend JavaScript.
 
-From the panel, an administrator can:
+### Player management
 
-1. Select a team.
-2. Add a player.
-3. Upload a JPG, PNG, or WebP image.
-4. Edit player information.
-5. Remove a player or player image.
-6. Search the current roster.
+Add player details, assign a team, upload an image, and manage the public roster.
 
-The public team pages read the same data from the API, so changes made in the admin panel are visible to all visitors.
+### Coach management
+
+Create coach profiles with role, years of activity, specialties, biography, and image.
+
+### Blog management
+
+Create a new post from the built-in editor. A post supports:
+
+- English slug
+- Category
+- Draft or published status
+- Excerpt
+- Rich text content
+- Cover image
+- Multiple gallery images
+
+Blog HTML is sanitized server-side before storage to remove scripts, unsafe attributes, and unsafe URLs.
+
+### Messages and comments
+
+Consultation form submissions are stored in the `contact_messages` table. Blog comments are stored as `pending` and must be approved from the admin panel before they appear publicly.
 
 ## API Endpoints
 
@@ -258,28 +297,38 @@ The public team pages read the same data from the API, so changes made in the ad
 | `POST` | `/api/auth/logout.php` | End admin session |
 | `GET` | `/api/auth/me.php` | Check current session |
 | `GET` | `/api/public/teams.php` | List active teams |
-| `GET` | `/api/public/players.php?team=kids` | Public team roster |
-| `GET` | `/api/public/stats.php` | Roster statistics |
-| `POST` | `/api/public/contact.php` | Store consultation request |
+| `GET` | `/api/public/players.php?team=kids` | Public roster |
+| `GET` | `/api/public/coaches.php` | Public coaching staff |
+| `GET` | `/api/public/blogs.php` | Published blog posts |
+| `GET` | `/api/public/blogs.php?slug=...` | Published post detail |
+| `POST` | `/api/public/comments.php` | Submit a pending comment |
+| `POST` | `/api/public/contact.php` | Store a consultation request |
+| `GET` | `/api/public/stats.php` | Public roster statistics |
 | `GET` | `/api/admin/players.php?team=kids` | Admin roster |
 | `POST` | `/api/admin/players.php` | Create or update player |
 | `DELETE` | `/api/admin/players.php?id=123` | Delete player |
+| `GET` | `/api/admin/coaches.php` | Admin coach list |
+| `POST` | `/api/admin/coaches.php` | Create or update coach |
+| `DELETE` | `/api/admin/coaches.php?id=123` | Delete coach |
+| `GET` | `/api/admin/blogs.php` | Admin blog list |
+| `POST` | `/api/admin/blogs.php` | Create or update blog |
+| `DELETE` | `/api/admin/blogs.php?id=123` | Delete blog |
+| `GET` | `/api/admin/messages.php` | Admin contact inbox |
+| `GET` | `/api/admin/comments.php` | Admin comment queue |
 
-Admin write requests require an authenticated session and a valid CSRF token.
+Admin write requests require a valid authenticated session and CSRF token.
 
 ## GitHub Pages
 
-GitHub Pages can host the public static frontend, but it cannot run the PHP API or MySQL database.
+GitHub Pages can host the public static frontend, but it cannot run PHP or MySQL. The complete version with admin, blog management, comments, messages, and image uploads must be deployed to a PHP/MySQL host.
 
-For the complete version with a working admin panel, deploy the project to a PHP/MySQL host. GitHub can remain the source-code repository.
+GitHub can remain the source-code repository. For the public-only version:
 
-If you only want to publish the public frontend on GitHub Pages:
-
-1. Push the project files to a GitHub repository.
+1. Push the project to GitHub.
 2. Open **Settings → Pages**.
 3. Select **Deploy from a branch**.
 4. Select the `main` branch and `/ (root)`.
-5. Save the configuration.
+5. Save.
 
 Expected URL for `parsaahady/pishro-academy`:
 
@@ -287,30 +336,16 @@ Expected URL for `parsaahady/pishro-academy`:
 https://parsaahady.github.io/pishro-academy/
 ```
 
-The backend endpoints will not work on GitHub Pages.
-
-## Security Notes
+## Security Checklist
 
 - Do not commit `api/config.php`.
-- Do not use the setup token after installation.
-- Delete `api/setup.php` after creating the first admin.
-- Use HTTPS in production and set `cookie_secure` to `true`.
-- Use a strong, unique admin password.
-- Keep the database user password private.
-- Keep the upload directory protected from script execution.
-- Take regular database and upload backups.
-
-## Technology
-
-- HTML5
-- CSS3
-- Vanilla JavaScript
-- PHP 8.2+
-- PDO MySQL
-- MySQL / MariaDB
-- SVG
-- Session-based authentication
-- GitHub Pages compatible frontend
+- Use HTTPS and set `cookie_secure` to `true`.
+- Disable and remove `api/setup.php` after the first setup.
+- Use a unique admin password.
+- Keep the database credentials private.
+- Keep upload directories protected from script execution.
+- Review and approve comments before publication.
+- Back up the database and upload directories regularly.
 
 ## License
 
@@ -318,7 +353,7 @@ No open-source license has been added yet. Add a license before distributing or 
 
 <div align="center">
   <br />
-  <strong>🐯 Pishro Hockey Academy</strong>
+  <strong>🐯 Pishro Hockey</strong>
   <br />
   <sub>Move · Control · Play</sub>
 </div>

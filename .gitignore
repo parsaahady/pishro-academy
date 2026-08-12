@@ -1,6 +1,10 @@
 api/config.php
 uploads/players/*
 !uploads/players/.gitkeep
+uploads/blogs/*
+!uploads/blogs/.gitkeep
+uploads/coaches/*
+!uploads/coaches/.gitkeep
 *.log
 .DS_Store
 Thumbs.db

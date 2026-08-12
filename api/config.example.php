@@ -19,6 +19,10 @@ return [
         'max_upload_bytes' => 3 * 1024 * 1024,
         'upload_dir' => dirname(__DIR__) . '/uploads/players',
         'upload_url' => 'uploads/players',
+        'blog_upload_dir' => dirname(__DIR__) . '/uploads/blogs',
+        'blog_upload_url' => 'uploads/blogs',
+        'coach_upload_dir' => dirname(__DIR__) . '/uploads/coaches',
+        'coach_upload_url' => 'uploads/coaches',
         // Use a long random value. Disable setup after creating the first admin.
         'setup_enabled' => true,
         'setup_token' => 'CHANGE_THIS_TO_A_LONG_RANDOM_SETUP_TOKEN',

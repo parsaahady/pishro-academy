@@ -38,6 +38,13 @@ header('X-Frame-Options: DENY');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
 
+set_exception_handler(static function (Throwable $exception): void {
+    error_log($exception->getMessage());
+    http_response_code(500);
+    echo json_encode(['ok' => false, 'error' => 'An internal server error occurred.'], JSON_UNESCAPED_UNICODE);
+    exit;
+});
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
     exit;
