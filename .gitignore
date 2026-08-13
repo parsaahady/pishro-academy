@@ -1,4 +1,7 @@
 api/config.php
+
+# اعتبارنامه هرگز نباید سمت کلاینت باشد — احراز هویت از api/auth/login.php انجام می‌شود
+admin-config.js
 uploads/players/*
 !uploads/players/.gitkeep
 !uploads/players/.htaccess
