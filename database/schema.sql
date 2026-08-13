@@ -138,5 +138,14 @@ ON DUPLICATE KEY UPDATE
     image_path = VALUES(image_path),
     sort_order = VALUES(sort_order);
 
+CREATE TABLE IF NOT EXISTS rate_limits (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    action VARCHAR(40) NOT NULL,
+    identifier CHAR(64) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_rate_limits_lookup (action, identifier, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Create the first admin through api/setup.php or insert a password_hash
 -- generated with PHP password_hash('your-password', PASSWORD_DEFAULT).

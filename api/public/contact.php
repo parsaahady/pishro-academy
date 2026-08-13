@@ -10,6 +10,13 @@ $lastContact = (int)($_SESSION['last_contact_at'] ?? 0);
 if ($lastContact && time() - $lastContact < 20) {
     error_response('Please wait before sending another request.', 429);
 }
+// Persistent, IP-based throttle: the session check above is a fast path but
+// can be bypassed by dropping cookies, so also enforce a per-IP limit that
+// survives a fresh session.
+if (rate_limit_hit('contact', client_ip(), 10, 10 * 60)) {
+    error_response('Please wait before sending another request.', 429);
+}
+record_rate_limit('contact', client_ip());
 
 $data = input_json();
 $name = clean_string($data['name'] ?? $_POST['name'] ?? '', 120);

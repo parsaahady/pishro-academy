@@ -31,22 +31,37 @@ function require_admin(): array
     return $admin;
 }
 
-function login_rate_limited(): bool
+const LOGIN_RATE_LIMIT_WINDOW_SECONDS = 15 * 60;
+const LOGIN_RATE_LIMIT_MAX_ATTEMPTS = 8;
+
+/**
+ * Persistent (database-backed) login throttle, keyed by client IP and,
+ * separately, by the attempted username. This cannot be bypassed by
+ * clearing cookies / requesting a fresh session, unlike a purely
+ * session-based counter.
+ */
+function login_rate_limited(string $username = ''): bool
 {
-    $now = time();
-    $window = 15 * 60;
-    $attempts = $_SESSION['login_attempts'] ?? [];
-    $attempts = array_values(array_filter($attempts, static fn($time): bool => ($now - (int)$time) < $window));
-    $_SESSION['login_attempts'] = $attempts;
-    return count($attempts) >= 8;
+    if (rate_limit_hit('login_ip', client_ip(), LOGIN_RATE_LIMIT_MAX_ATTEMPTS, LOGIN_RATE_LIMIT_WINDOW_SECONDS)) {
+        return true;
+    }
+    if ($username !== '' && rate_limit_hit('login_user', strtolower($username), LOGIN_RATE_LIMIT_MAX_ATTEMPTS, LOGIN_RATE_LIMIT_WINDOW_SECONDS)) {
+        return true;
+    }
+    return false;
 }
 
-function record_login_failure(): void
+function record_login_failure(string $username = ''): void
 {
-    $_SESSION['login_attempts'][] = time();
+    record_rate_limit('login_ip', client_ip());
+    if ($username !== '') {
+        record_rate_limit('login_user', strtolower($username));
+    }
 }
 
 function clear_login_failures(): void
 {
-    unset($_SESSION['login_attempts']);
+    // Successful logins are not cleared from the persistent throttle on
+    // purpose: a single successful login should not reset an in-progress
+    // distributed brute-force window against this IP or username.
 }

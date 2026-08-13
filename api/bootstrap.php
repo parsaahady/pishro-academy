@@ -37,6 +37,10 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+header("Content-Security-Policy: default-src 'none'; frame-ancestors 'none'");
+if ($secureCookie) {
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+}
 
 set_exception_handler(static function (Throwable $exception): void {
     error_log($exception->getMessage());
@@ -153,5 +157,37 @@ function require_csrf(): void
 
 function client_ip(): string
 {
+    // Intentionally trusts only REMOTE_ADDR. Client-supplied headers such as
+    // X-Forwarded-For are trivially spoofable and must never be trusted here
+    // unless this app sits behind a known, correctly configured reverse proxy
+    // that overwrites (not appends to) that header.
     return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+}
+
+/**
+ * Persistent, database-backed rate limiter. Unlike a session-based counter,
+ * this cannot be bypassed by dropping cookies / requesting a fresh session,
+ * since it is keyed on server-observed identifiers (e.g. IP address).
+ */
+function rate_limit_hit(string $action, string $identifier, int $maxAttempts, int $windowSeconds): bool
+{
+    $hashed = hash('sha256', $identifier);
+    $cutoff = gmdate('Y-m-d H:i:s', time() - $windowSeconds);
+    $stmt = db()->prepare(
+        'SELECT COUNT(*) FROM rate_limits WHERE action = ? AND identifier = ? AND created_at > ?'
+    );
+    $stmt->execute([$action, $hashed, $cutoff]);
+    return (int)$stmt->fetchColumn() >= $maxAttempts;
+}
+
+function record_rate_limit(string $action, string $identifier): void
+{
+    $hashed = hash('sha256', $identifier);
+    $stmt = db()->prepare('INSERT INTO rate_limits (action, identifier) VALUES (?, ?)');
+    $stmt->execute([$action, $hashed]);
+
+    // Opportunistic cleanup so the table doesn't grow unbounded.
+    if (random_int(1, 50) === 1) {
+        db()->exec('DELETE FROM rate_limits WHERE created_at < (UTC_TIMESTAMP() - INTERVAL 1 DAY)');
+    }
 }

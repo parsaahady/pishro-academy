@@ -15,6 +15,13 @@ $lastComment = (int)($_SESSION['last_comment_at'] ?? 0);
 if ($lastComment && time() - $lastComment < 30) {
     error_response('Please wait before sending another comment.', 429);
 }
+// Persistent, IP-based throttle: the session check above is a fast path but
+// can be bypassed by dropping cookies, so also enforce a per-IP limit that
+// survives a fresh session.
+if (rate_limit_hit('comment', client_ip(), 10, 10 * 60)) {
+    error_response('Please wait before sending another comment.', 429);
+}
+record_rate_limit('comment', client_ip());
 
 $slug = clean_string($data['slug'] ?? $_POST['slug'] ?? '', 180);
 $name = clean_string($data['name'] ?? $_POST['name'] ?? '', 120);

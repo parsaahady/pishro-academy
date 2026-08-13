@@ -25,8 +25,11 @@ $password = (string)($data['password'] ?? $_POST['password'] ?? '');
 if (!preg_match('/^[a-zA-Z0-9._-]{3,80}$/', $username)) {
     error_response('Username must contain 3–80 letters, numbers, dots, underscores, or hyphens.', 422);
 }
-if (strlen($password) < 10) {
-    error_response('Password must contain at least 10 characters.', 422);
+if (strlen($password) < 12) {
+    error_response('Password must contain at least 12 characters.', 422);
+}
+if (!preg_match('/[a-zA-Z]/', $password) || !preg_match('/[0-9]/', $password)) {
+    error_response('Password must contain both letters and numbers.', 422);
 }
 
 $schemaPath = dirname(__DIR__) . '/database/schema.sql';
@@ -41,6 +44,20 @@ try {
         $pdo->exec("ALTER TABLE blog_posts ADD COLUMN category VARCHAR(50) NOT NULL DEFAULT 'training' AFTER excerpt");
     } catch (Throwable $ignored) {
         // The column already exists on an existing installation.
+    }
+    try {
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS rate_limits (
+                id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                action VARCHAR(40) NOT NULL,
+                identifier CHAR(64) NOT NULL,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (id),
+                KEY idx_rate_limits_lookup (action, identifier, created_at)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+    } catch (Throwable $ignored) {
+        // The table already exists on an existing installation.
     }
     $seedPath = dirname(__DIR__) . '/database/seed.sql';
     if (is_file($seedPath)) {
