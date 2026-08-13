@@ -21,7 +21,7 @@ if ($teamSlug !== '') {
 }
 
 $sql = 'SELECT p.id, p.name, p.jersey_number, p.age, p.years_active, p.position,
-               p.age_group, p.bio, p.image_path, p.created_at, p.updated_at,
+               p.age_group, p.bio, p.iran_hockey_url, p.image_path, p.created_at, p.updated_at,
                t.slug AS team_slug, t.name AS team_name, t.english_name AS team_english_name,
                t.age_range AS team_age_range, t.discipline AS team_discipline
         FROM players p
@@ -39,6 +39,7 @@ $players = array_map(static function (array $player): array {
     $player['jersey_number'] = $player['jersey_number'] !== null ? (int)$player['jersey_number'] : null;
     $player['age'] = (int)$player['age'];
     $player['years_active'] = (int)$player['years_active'];
+    $player['iran_hockey_url'] = clean_external_url($player['iran_hockey_url'] ?? '');
     $player['image_url'] = $player['image_path']
         ? 'api/public/player-image.php?file=' . rawurlencode(basename((string)$player['image_path']))
         : null;

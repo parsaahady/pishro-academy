@@ -134,6 +134,42 @@ function clean_string(mixed $value, int $maxLength = 255): string
     return function_exists('mb_substr') ? mb_substr($value, 0, $maxLength) : substr($value, 0, $maxLength);
 }
 
+/**
+ * Normalise an optional, user-supplied external profile link (e.g. Iran Hockey).
+ * Returns null when empty or when the value is not a safe http(s) URL, so that
+ * javascript:, data: and other scheme-based injections can never be stored.
+ */
+function clean_external_url(mixed $value, int $maxLength = 255): ?string
+{
+    $url = trim((string)$value);
+    if ($url === '') {
+        return null;
+    }
+    if (!preg_match('~^https?://~i', $url)) {
+        $url = 'https://' . ltrim($url, '/');
+    }
+    // Reject control characters and whitespace that could break an href attribute.
+    if (preg_match('/[\x00-\x20\x7F"\'<>\\\\^`{|}]/u', $url)) {
+        return null;
+    }
+    // VARCHAR(255) on a utf8mb4 column counts characters, so measure characters.
+    if ((function_exists('mb_strlen') ? mb_strlen($url) : strlen($url)) > $maxLength) {
+        return null;
+    }
+    // NOTE: FILTER_VALIDATE_URL is deliberately NOT used here. Iran Hockey profile
+    // links contain Persian slugs (e.g. /player-profile/ناصر-رستمی/) and the filter
+    // rejects any non-ASCII character, which would drop perfectly valid links.
+    $parts = parse_url($url);
+    if ($parts === false || empty($parts['host'])) {
+        return null;
+    }
+    $host = strtolower((string)$parts['host']);
+    if (!preg_match('/^(?:[a-z0-9\x{0080}-\x{FFFF}](?:[a-z0-9\x{0080}-\x{FFFF}-]*[a-z0-9\x{0080}-\x{FFFF}])?\.)+[a-z\x{0080}-\x{FFFF}]{2,}$/u', $host)) {
+        return null;
+    }
+    return $url;
+}
+
 function valid_slug(string $slug): bool
 {
     return (bool)preg_match('/^[a-z0-9-]{2,50}$/', $slug);

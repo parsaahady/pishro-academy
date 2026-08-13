@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS players (
     position VARCHAR(80) NULL,
     age_group VARCHAR(80) NULL,
     bio TEXT NULL,
+    iran_hockey_url VARCHAR(255) NULL,
     image_path VARCHAR(255) NULL,
     is_published TINYINT(1) NOT NULL DEFAULT 1,
     sort_order INT NOT NULL DEFAULT 0,

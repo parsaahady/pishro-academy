@@ -1,5 +1,11 @@
 const $ = (s, r = document) => r.querySelector(s);
 const fa = v => String(v).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹' [d]);
+const safeUrl = v => {
+  const u = String(v || '').trim();
+  // Only absolute http(s) links, and never characters that could break out of href="".
+  if (!/^https?:\/\//i.test(u)) return '';
+  return /["'<>`\s\\]/.test(u) ? '' : u;
+};
 const esc = v => String(v || '').replace(/[&<>"']/g, c => ({
   '&': '&amp;',
   '<': '&lt;',
@@ -44,7 +50,9 @@ document.title = `${title} | پیشرو`;
 
 function card(p) {
   const img = p.image_url ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}">` : `<div class="player-initials">${esc((p.name||'پ')[0])}</div>`;
-  return `<article class="player-card"><div class="player-card-image">${img}<span class="player-card-position">${esc(p.position||'بازیکن')}</span></div><div class="player-card-body"><h3>${esc(p.name)}</h3><p>${esc(p.bio||'پروفایل این بازیکن به‌زودی تکمیل می‌شود.')}</p></div></article>`
+  const profile = safeUrl(p.iran_hockey_url);
+  const link = profile ? `<a class="player-external-link" href="${esc(profile)}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg><span>پروفایل ایران هاکی</span><b>↗</b></a>` : '';
+  return `<article class="player-card"><div class="player-card-image">${img}<span class="player-card-position">${esc(p.position||'بازیکن')}</span></div><div class="player-card-body"><h3>${esc(p.name)}</h3><p>${esc(p.bio||'پروفایل این بازیکن به‌زودی تکمیل می‌شود.')}</p>${link}</div></article>`
 }
 async function load() {
   try {

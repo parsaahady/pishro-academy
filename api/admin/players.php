@@ -112,6 +112,8 @@ function validated_player_fields(array $data): array
     $position = clean_string($data['position'] ?? '', 80);
     $ageGroup = clean_string($data['ageGroup'] ?? $data['age_group'] ?? '', 80);
     $bio = clean_string($data['bio'] ?? '', 2000);
+    $iranHockeyRaw = trim((string)($data['iranHockeyUrl'] ?? $data['iran_hockey_url'] ?? ''));
+    $iranHockeyUrl = clean_external_url($iranHockeyRaw);
 
     $nameLength = function_exists('mb_strlen') ? mb_strlen($name) : strlen($name);
     if ($nameLength < 2) {
@@ -126,15 +128,18 @@ function validated_player_fields(array $data): array
     if ($jerseyNumber !== null && ($jerseyNumber < 0 || $jerseyNumber > 99)) {
         error_response('Jersey number must be between 0 and 99.', 422);
     }
+    if ($iranHockeyRaw !== '' && $iranHockeyUrl === null) {
+        error_response('Iran Hockey profile link is not a valid URL.', 422);
+    }
 
-    return [$name, $jerseyNumber, $age, $yearsActive, $position !== '' ? $position : null, $ageGroup !== '' ? $ageGroup : null, $bio !== '' ? $bio : null];
+    return [$name, $jerseyNumber, $age, $yearsActive, $position !== '' ? $position : null, $ageGroup !== '' ? $ageGroup : null, $bio !== '' ? $bio : null, $iranHockeyUrl];
 }
 
 function get_admin_players(string $teamSlug): array
 {
     $stmt = db()->prepare(
         'SELECT p.id, p.team_id, p.name, p.jersey_number, p.age, p.years_active,
-                p.position, p.age_group, p.bio, p.image_path, p.is_published,
+                p.position, p.age_group, p.bio, p.iran_hockey_url, p.image_path, p.is_published,
                 p.created_at, p.updated_at, t.slug AS team_slug, t.name AS team_name
          FROM players p INNER JOIN teams t ON t.id = p.team_id
          WHERE t.slug = ? ORDER BY p.sort_order ASC, p.updated_at DESC, p.id DESC'
@@ -156,7 +161,7 @@ if ($method === 'POST') {
     require_csrf();
     $teamSlug = clean_string($_POST['team'] ?? '', 50);
     $team = admin_team($teamSlug);
-    [$name, $jerseyNumber, $age, $yearsActive, $position, $ageGroup, $bio] = validated_player_fields($_POST);
+    [$name, $jerseyNumber, $age, $yearsActive, $position, $ageGroup, $bio, $iranHockeyUrl] = validated_player_fields($_POST);
     $id = (int)($_POST['id'] ?? 0);
     $newImagePath = save_player_image($_FILES['photo'] ?? null);
     $oldImagePath = null;
@@ -179,16 +184,16 @@ if ($method === 'POST') {
             $imagePath = $newImagePath ?: ($removeImage ? null : $oldImagePath);
             $stmt = $pdo->prepare(
                 'UPDATE players SET team_id = ?, name = ?, jersey_number = ?, age = ?, years_active = ?,
-                 position = ?, age_group = ?, bio = ?, image_path = ?, updated_at = UTC_TIMESTAMP()
+                 position = ?, age_group = ?, bio = ?, iran_hockey_url = ?, image_path = ?, updated_at = UTC_TIMESTAMP()
                  WHERE id = ?'
             );
-            $stmt->execute([$team['id'], $name, $jerseyNumber, $age, $yearsActive, $position, $ageGroup, $bio, $imagePath, $id]);
+            $stmt->execute([$team['id'], $name, $jerseyNumber, $age, $yearsActive, $position, $ageGroup, $bio, $iranHockeyUrl, $imagePath, $id]);
         } else {
             $stmt = $pdo->prepare(
-                'INSERT INTO players (team_id, name, jersey_number, age, years_active, position, age_group, bio, image_path)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                'INSERT INTO players (team_id, name, jersey_number, age, years_active, position, age_group, bio, iran_hockey_url, image_path)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
             );
-            $stmt->execute([$team['id'], $name, $jerseyNumber, $age, $yearsActive, $position, $ageGroup, $bio, $newImagePath]);
+            $stmt->execute([$team['id'], $name, $jerseyNumber, $age, $yearsActive, $position, $ageGroup, $bio, $iranHockeyUrl, $newImagePath]);
             $id = (int)$pdo->lastInsertId();
         }
         $pdo->commit();
@@ -204,7 +209,7 @@ if ($method === 'POST') {
 
     $stmt = db()->prepare(
         'SELECT p.id, p.team_id, p.name, p.jersey_number, p.age, p.years_active,
-                p.position, p.age_group, p.bio, p.image_path, p.is_published,
+                p.position, p.age_group, p.bio, p.iran_hockey_url, p.image_path, p.is_published,
                 p.created_at, p.updated_at, t.slug AS team_slug, t.name AS team_name
          FROM players p INNER JOIN teams t ON t.id = p.team_id WHERE p.id = ? LIMIT 1'
     );

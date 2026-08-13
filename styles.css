@@ -679,3 +679,12 @@ h1 span, h2 span,
   .contact-channels { flex-direction: column; align-items: flex-start; gap: 12px; }
   .contact-channel { width: 100%; }
 }
+
+/* --- لینک اختیاری پروفایل ایران هاکی --- */
+.player-external-link { display: inline-flex; align-items: center; gap: 7px; margin-top: 2px; padding: 8px 11px; border: 1px solid rgba(113,217,238,.3); border-radius: 8px; background: linear-gradient(120deg, rgba(35,127,167,.22), rgba(18,60,86,.3)); color: #bfeaf6; font-size: .63rem; line-height: 1; text-decoration: none; transition: .25s ease; }
+.player-external-link:hover { border-color: rgba(255,141,94,.5); background: linear-gradient(120deg, rgba(238,103,50,.22), rgba(169,56,32,.24)); color: #ffd9c6; transform: translateY(-2px); }
+.player-external-link svg { width: 14px; height: 14px; flex: 0 0 14px; }
+.player-external-link b { color: var(--orange-light); font-family: var(--font-en); font-weight: 700; }
+.admin-player-link { display: inline-flex; align-items: center; gap: 5px; margin: 0 0 10px; color: #9fdcea; font-size: .58rem; text-decoration: none; direction: rtl; }
+.admin-player-link:hover { color: var(--orange-light); }
+.admin-player-link span { font-family: var(--font-en); }

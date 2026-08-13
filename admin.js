@@ -70,7 +70,7 @@ async function renderTeamGallery() {
 }
 function renderRoster() {
   const term = ($('#adminSearch')?.value || '').trim().toLowerCase();
-  const filtered = activePlayers.filter((player) => [player.name, player.position, player.age_group, player.jersey_number, player.bio].join(' ').toLowerCase().includes(term));
+  const filtered = activePlayers.filter((player) => [player.name, player.position, player.age_group, player.jersey_number, player.bio, player.iran_hockey_url].join(' ').toLowerCase().includes(term));
   const empty = $('#adminEmpty');
   const grid = $('#adminRosterGrid');
   empty.classList.toggle('visible', activePlayers.length === 0);
@@ -87,7 +87,7 @@ function renderRoster() {
     const experience = `${faDigits(player.years_active || 0)} سال`;
     const position = player.position || 'بازیکن';
     const group = player.age_group || teams[activeTeamKey].category;
-    return `<article class="admin-player-card" data-player-id="${escapeHTML(player.id)}"><div class="admin-player-card-image">${visual}<span class="player-card-number">${number}</span><span class="player-card-position">${escapeHTML(position)}</span></div><div class="admin-player-card-body"><div class="player-card-kicker">PLAYER / ${faDigits(String(index + 1).padStart(2, '0'))}</div><h3>${escapeHTML(player.name)}</h3><div class="admin-player-mini-meta"><span>${age}</span><span>${experience} فعالیت</span><span>${escapeHTML(group)}</span></div><p>${escapeHTML(player.bio || 'بدون توضیحات تکمیلی')}</p><div class="admin-player-actions"><button class="player-edit" data-admin-action="edit">ویرایش <span>↗</span></button><button class="player-delete" data-admin-action="delete">حذف</button></div></div></article>`;
+    return `<article class="admin-player-card" data-player-id="${escapeHTML(player.id)}"><div class="admin-player-card-image">${visual}<span class="player-card-number">${number}</span><span class="player-card-position">${escapeHTML(position)}</span></div><div class="admin-player-card-body"><div class="player-card-kicker">PLAYER / ${faDigits(String(index + 1).padStart(2, '0'))}</div><h3>${escapeHTML(player.name)}</h3><div class="admin-player-mini-meta"><span>${age}</span><span>${experience} فعالیت</span><span>${escapeHTML(group)}</span></div><p>${escapeHTML(player.bio || 'بدون توضیحات تکمیلی')}</p>${player.iran_hockey_url ? `<a class="admin-player-link" href="${escapeHTML(player.iran_hockey_url)}" target="_blank" rel="noopener noreferrer">پروفایل ایران هاکی <span>↗</span></a>` : ''}<div class="admin-player-actions"><button class="player-edit" data-admin-action="edit">ویرایش <span>↗</span></button><button class="player-delete" data-admin-action="delete">حذف</button></div></div></article>`;
   }).join('');
 }
 
@@ -184,6 +184,7 @@ function openPlayerModal(player = null) {
   playerForm.elements.playerId.value = player?.id || '';
   if (player) {
     ['name', 'number', 'age', 'experience', 'position', 'ageGroup', 'bio'].forEach((field) => { if (playerForm.elements[field]) playerForm.elements[field].value = player[field] || ''; });
+    if (playerForm.elements.iranHockeyUrl) playerForm.elements.iranHockeyUrl.value = player.iran_hockey_url || '';
   }
   $('#adminPlayerModalTitle').innerHTML = player ? 'ویرایش بازیکن<br /><span>و ذخیره تغییرات.</span>' : 'افزودن بازیکن<br /><span>به فهرست تیم.</span>';
   showPhotoPreview(player?.image_url || '');
