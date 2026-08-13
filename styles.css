@@ -616,3 +616,66 @@ h1 span, h2 span,
 .gear-panel{background:linear-gradient(90deg,rgba(5,14,18,.34),rgba(5,14,18,.9) 62%),url('assets/gallery/skate-consultation-bg.webp') center center/cover no-repeat !important}.gear-panel .gear-glow{background:radial-gradient(circle,rgba(42,193,255,.14),transparent 65%)}.gear-panel .gear-copy{position:relative;z-index:2}.gear-panel .skate-display{display:none}
 @media(max-width:720px){.gear-panel{background:linear-gradient(0deg,rgba(5,14,18,.93),rgba(5,14,18,.3)),url('assets/gallery/skate-consultation-bg.webp') center center/cover no-repeat !important}}
 .glass-feature{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(0deg,rgba(5,18,24,.85),rgba(5,18,24,.18)),url('assets/gallery/ages-3-to-60.webp') center center/cover no-repeat !important}.glass-feature::before{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(135deg,rgba(9,28,36,.3),rgba(255,111,47,.12))}.glass-feature>*{position:relative;z-index:1}
+
+/* ============================================================
+   به‌روزرسانی محتوای صفحه اصلی
+   ============================================================ */
+
+/* عنوان بدون پاراگراف کناری: تیتر تمام‌عرض شود */
+.heading-solo { grid-template-columns: 1fr !important; }
+
+/* واژه نارنجی در نوار اعتماد هیرو */
+.proof-accent { color: var(--orange-light); font-style: normal; font-weight: 800; }
+.hero-proof strong { line-height: 1.6; }
+
+/* جمله شاخص ابتدای متن کارت‌ها */
+.program-lead, .plan-lead { display: block; margin-bottom: 6px; color: #e6f6fa; font-size: .78rem; font-weight: 700; line-height: 1.7; }
+.dark-plan .plan-lead { color: #fff; }
+
+/* آیکون‌های خطی SVG داخل توکن‌های آیکون */
+.detail-icon svg, .quick-nav-icon svg { width: 19px; height: 19px; display: block; }
+.quick-nav-icon svg { width: 20px; height: 20px; }
+
+/* کارت عریض تجربه مربیگری */
+.quick-nav-wide { grid-column: span 2; min-height: 240px; }
+.quick-nav-wide img { object-position: center 22%; }
+.quick-nav-wide b { font-size: 1.05rem; }
+
+/* متن واضح‌تر روی کارت‌های تصویری */
+.quick-image .quick-image-shade { background: linear-gradient(0deg, rgba(3,10,14,.95), rgba(4,13,17,.55) 45%, rgba(5,15,19,.12) 85%); }
+.quick-image b { text-shadow: 0 2px 10px rgba(0,0,0,.7); }
+.quick-image small { color: rgba(240,250,250,.9); text-shadow: 0 1px 8px rgba(0,0,0,.75); }
+
+/* چهار مجموعه ورزشی */
+.venue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.venue-card { position: relative; display: flex; align-items: center; gap: 11px; padding: 13px 13px 13px 12px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(145deg, rgba(28,59,70,.5), rgba(7,19,25,.55)); transition: border-color .3s ease, transform .3s ease; }
+.venue-card:hover { transform: translateY(-3px); border-color: rgba(255,143,96,.45); }
+.venue-card .detail-icon { flex: 0 0 auto; }
+.venue-card b { display: block; color: #dcf1f4; font-size: .74rem; line-height: 1.5; }
+.venue-card small { display: block; margin-top: 3px; color: var(--muted-2); font-size: .63rem; }
+.venue-index { position: absolute; top: 9px; left: 11px; color: rgba(183,241,255,.32); font: 700 .6rem var(--font-en); direction: ltr; }
+
+/* شماره تماس در پنل ارتباطی */
+.contact-channels { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
+.contact-channel { display: inline-flex; align-items: center; gap: 11px; padding: 10px 14px 10px 12px; border: 1px solid rgba(255,111,47,.32); border-radius: 12px; background: rgba(255,111,47,.08); transition: border-color .3s ease, background .3s ease, transform .3s ease; }
+.contact-channel:hover { transform: translateY(-2px); border-color: rgba(255,143,96,.6); background: rgba(255,111,47,.14); }
+.contact-channel b { display: block; color: #fff; font: 800 .95rem var(--font-en); direction: ltr; letter-spacing: .5px; }
+.contact-channel small { display: block; margin-top: 2px; color: var(--muted-2); font-size: .63rem; }
+
+/* شمارنده ورودی سالانه در بخش پلن‌ها */
+.plans-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+.plans-aside p { margin: 0; }
+.intake-badge { display: inline-flex; align-items: center; gap: 12px; padding: 12px 16px 12px 14px; border: 1px solid rgba(157,225,240,.26); border-radius: 13px; background: linear-gradient(145deg, rgba(45,112,134,.32), rgba(8,25,33,.6)); }
+.intake-badge b { display: block; color: #d8f5fb; font: 800 1.7rem/1 var(--font-en); direction: ltr; }
+.intake-badge b i { font-style: normal; }
+.intake-badge small { display: block; margin-top: 4px; color: var(--muted); font-size: .68rem; }
+
+@media (max-width: 900px) {
+  .quick-nav-wide { grid-column: span 2; min-height: 200px; }
+}
+@media (max-width: 640px) {
+  .venue-grid { grid-template-columns: 1fr; }
+  .quick-nav-wide { grid-column: auto; min-height: 190px; }
+  .contact-channels { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .contact-channel { width: 100%; }
+}

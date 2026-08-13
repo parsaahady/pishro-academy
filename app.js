@@ -80,7 +80,7 @@ const statsObserver = new IntersectionObserver((entries, observer) => {
     const tick = (now) => {
       const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      element.textContent = faDigits(Math.round(target * eased));
+      element.textContent = (element.dataset.prefix || '') + faDigits(Math.round(target * eased));
       if (progress < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
@@ -198,7 +198,7 @@ $('#contactForm')?.addEventListener('submit', async (event) => {
 
 // Map query button. The query stays editable and can later be replaced with a precise pin.
 $('#mapButton')?.addEventListener('click', () => {
-  const query = encodeURIComponent('پیست روباز اول غیاث آباد کنار ورزشگاه الغدیر');
+  const query = encodeURIComponent('پیست اسکیت الغدیر قزوین');
   window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank', 'noopener');
 });
 
