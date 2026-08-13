@@ -1,0 +1,33 @@
+name: Deploy to Hosting via FTP
+
+on:
+  push:
+    branches:
+      - main   # اگه اسم برنچ اصلی شما "master" هست، اینو به master تغییر بدید
+
+jobs:
+  ftp-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            api/config.php
+            uploads/players/**
+            uploads/blogs/**
+            uploads/coaches/**
+            !uploads/players/.htaccess
+            !uploads/blogs/.htaccess
+            !uploads/coaches/.htaccess
