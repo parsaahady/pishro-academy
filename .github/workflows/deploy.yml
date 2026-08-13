@@ -20,6 +20,8 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          protocol: ftps
+          # این فایل‌ها/پوشه‌ها هیچ‌وقت آپلود یا حذف نمی‌شن روی هاست
           exclude: |
             **/.git*
             **/.git*/**
