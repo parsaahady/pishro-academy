@@ -46,3 +46,8 @@ async function refreshDirectoryStats() {
 refreshDirectoryStats();
 window.addEventListener('pishro-roster-updated', refreshDirectoryStats);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshDirectoryStats(); });
+// Visual archive lightbox
+const lightbox = $('#pishroLightbox');
+$$('[data-lightbox]').forEach((tile) => tile.addEventListener('click', () => { $('#pishroLightboxImage').src = tile.dataset.lightbox; $('#pishroLightboxImage').alt = tile.dataset.caption || ''; $('#pishroLightboxCaption').textContent = tile.dataset.caption || ''; lightbox?.classList.add('open'); lightbox?.setAttribute('aria-hidden','false'); document.body.classList.add('modal-open'); }));
+$('.pishro-lightbox-close')?.addEventListener('click', () => { lightbox?.classList.remove('open'); document.body.classList.remove('modal-open'); });
+lightbox?.addEventListener('click', (event) => { if (event.target === lightbox) $('.pishro-lightbox-close')?.click(); });

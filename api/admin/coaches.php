@@ -24,7 +24,8 @@ function get_admin_coach(int $id): ?array
 
 $method = request_method();
 if ($method === 'GET') {
-    $stmt = db()->query('SELECT * FROM coaches ORDER BY sort_order ASC, updated_at DESC, id DESC');
+    // Keep creation order in the dashboard too: newer coaches appear at the bottom.
+    $stmt = db()->query('SELECT * FROM coaches ORDER BY created_at ASC, id ASC');
     ok_response(['coaches' => array_map('admin_coach_payload', $stmt->fetchAll())]);
 }
 

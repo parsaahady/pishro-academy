@@ -4,14 +4,19 @@ const faDigits = (value) => String(value).replace(/[0-9]/g, (digit) => '۰۱۲۳
 const escapeHTML = (value = '') => String(value).replace(/[&<>\'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[character]));
 
 const teams = {
-  kids: { no: '۰۱', title: 'ببرهای کوچک', category: '۶ تا ۹ سال', discipline: 'اسکیت هاکی' },
-  junior: { no: '۰۲', title: 'نوجوانان پیشرو', category: '۱۰ تا ۱۵ سال', discipline: 'اسکیت هاکی' },
-  women: { no: '۰۳', title: 'بانوان پیشرو', category: 'رده بانوان', discipline: 'هاکی روی یخ' },
-  adult: { no: '۰۴', title: 'تیم بزرگسالان', category: '۱۶ سال به بالا', discipline: 'هاکی روی یخ' },
-  pro: { no: '۰۵', title: 'مسیر قهرمانی', category: 'استعدادیابی', discipline: 'اسکیت هاکی و هاکی روی یخ' }
+  'novice-women': { no: '01', title: 'نونهالان بانوان', category: 'نونهالان', discipline: 'اسکیت و هاکی' },
+  'novice-men': { no: '02', title: 'نونهالان آقایان', category: 'نونهالان', discipline: 'اسکیت و هاکی' },
+  'teen-women': { no: '03', title: 'نوجوانان بانوان', category: 'نوجوانان', discipline: 'اسکیت و هاکی' },
+  'teen-men': { no: '04', title: 'نوجوانان آقایان', category: 'نوجوانان', discipline: 'اسکیت و هاکی' },
+  'youth-women': { no: '05', title: 'جوانان بانوان', category: 'جوانان', discipline: 'اسکیت و هاکی' },
+  'youth-men': { no: '06', title: 'جوانان آقایان', category: 'جوانان', discipline: 'اسکیت و هاکی' },
+  'adult-women': { no: '07', title: 'بزرگسالان بانوان', category: 'بزرگسالان', discipline: 'اسکیت و هاکی' },
+  'adult-men': { no: '08', title: 'بزرگسالان آقایان', category: 'بزرگسالان', discipline: 'اسکیت و هاکی' },
+  'new-women': { no: '09', title: 'ورزشکاران تازه بانوان', category: 'ورزشکاران تازه', discipline: 'اسکیت و هاکی' },
+  'new-men': { no: '10', title: 'ورزشکاران تازه آقایان', category: 'ورزشکاران تازه', discipline: 'اسکیت و هاکی' }
 };
 
-let activeTeamKey = 'kids';
+let activeTeamKey = 'novice-women';
 let activePlayers = [];
 let teamCounts = {};
 let editingId = null;
@@ -58,6 +63,11 @@ function renderTeamList() {
   $('#adminTeamList').innerHTML = Object.entries(teams).map(([key, team]) => `<button type="button" class="admin-team-button ${key === activeTeamKey ? 'active' : ''}" data-admin-team="${key}"><span class="admin-team-number">${team.no}</span><span><b>${team.title}</b><small>${team.category}</small></span><strong>${faDigits(teamCounts[key] || 0)}</strong></button>`).join('');
 }
 
+async function renderTeamGallery() {
+  const grid = $('#adminTeamGalleryGrid');
+  if (!grid || !window.PishroAPI) return;
+  try { const data = await PishroAPI.getAdminTeamGallery(activeTeamKey); grid.innerHTML = (data.images || []).map(image => `<figure data-gallery-id="${image.id}"><img src="${escapeHTML(image.image_url)}" alt="${escapeHTML(image.caption || '')}" /><figcaption>${escapeHTML(image.caption || 'بدون توضیح')} <button type="button" data-delete-gallery>حذف</button></figcaption></figure>`).join('') || '<p class="admin-tools-note">هنوز تصویری ثبت نشده است.</p>'; } catch (error) { grid.innerHTML = '<p class="admin-tools-note">پس از اجرای migration، گالری فعال می‌شود.</p>'; }
+}
 function renderRoster() {
   const term = ($('#adminSearch')?.value || '').trim().toLowerCase();
   const filtered = activePlayers.filter((player) => [player.name, player.position, player.age_group, player.jersey_number, player.bio].join(' ').toLowerCase().includes(term));
@@ -92,6 +102,7 @@ async function refreshAdmin() {
     renderTeamList();
     updateOverview();
     renderRoster();
+    renderTeamGallery();
   } catch (error) {
     console.error(error);
     showToast('اتصال برقرار نشد', 'اطلاعات پنل از سرور دریافت نشد. تنظیمات دیتابیس را بررسی کنید.');
@@ -154,6 +165,8 @@ $('#adminTeamList')?.addEventListener('click', (event) => {
   refreshAdmin();
 });
 $('#adminSearch')?.addEventListener('input', renderRoster);
+$('#adminTeamGalleryForm')?.addEventListener('submit', async (event) => { event.preventDefault(); try { await PishroAPI.saveTeamGalleryImage(activeTeamKey, new FormData(event.target)); event.target.reset(); renderTeamGallery(); showToast('تصویر اضافه شد', 'تصویر و توضیح آن در گالری تیم ذخیره شد.'); } catch (error) { showToast('ذخیره انجام نشد', error.payload?.error || 'ابتدا migration دیتابیس را اجرا کنید.'); } });
+$('#adminTeamGalleryGrid')?.addEventListener('click', async (event) => { const button = event.target.closest('[data-delete-gallery]'); if (!button || !confirm('این تصویر حذف شود؟')) return; const id = button.closest('[data-gallery-id]')?.dataset.galleryId; try { await PishroAPI.deleteTeamGalleryImage(activeTeamKey, id); renderTeamGallery(); } catch (error) { showToast('حذف انجام نشد', 'دوباره تلاش کنید.'); } });
 
 function initials(name) {
   const parts = String(name || '').trim().split(/\s+/).filter(Boolean);

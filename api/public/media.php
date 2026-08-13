@@ -8,7 +8,7 @@ if (request_method() !== 'GET') {
 
 $kind = clean_string($_GET['kind'] ?? '', 20);
 $filename = basename((string)($_GET['file'] ?? ''));
-if (!in_array($kind, ['blog', 'coach'], true) || !preg_match('/^[a-f0-9]{32}\.(jpg|jpeg|png|webp)$/i', $filename)) {
+if (!in_array($kind, ['blog', 'coach', 'team'], true) || !preg_match('/^[a-f0-9]{32}\.(jpg|jpeg|png|webp)$/i', $filename)) {
     error_response('Image not found.', 404);
 }
 
@@ -25,6 +25,11 @@ if ($kind === 'blog') {
     );
     $stmt->execute([$paths[0], $paths[0]]);
     $directory = app_config()['app']['blog_upload_dir'] ?? dirname(__DIR__, 2) . '/uploads/blogs';
+} elseif ($kind === 'team') {
+    $paths = ['uploads/teams/' . $filename];
+    $stmt = db()->prepare('SELECT g.id FROM team_gallery_images g INNER JOIN teams t ON t.id = g.team_id WHERE g.image_path = ?' . ($isAdmin ? '' : ' AND t.is_active = 1') . ' LIMIT 1');
+    $stmt->execute([$paths[0]]);
+    $directory = app_config()['app']['team_gallery_upload_dir'] ?? dirname(__DIR__, 2) . '/uploads/teams';
 } else {
     $paths = ['uploads/coaches/' . $filename];
     $visibility = $isAdmin ? '' : ' AND is_published = 1';

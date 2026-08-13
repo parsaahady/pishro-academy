@@ -7,7 +7,7 @@ if (request_method() !== 'GET') {
 }
 
 $stmt = db()->query(
-    'SELECT slug, name, english_name, age_range, discipline, image_path
+    'SELECT slug, category_key, gender, name, english_name, age_range, discipline, image_path
      FROM teams
      WHERE is_active = 1
      ORDER BY sort_order ASC, id ASC'

@@ -510,3 +510,109 @@ details p { padding: 0 20px 19px; margin: 0; color: var(--muted); font-size: .72
 }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+/* Dedicated contact destination */
+.contact-page-hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(30px, 7vw, 110px); align-items: center; min-height: calc(100vh - 175px); padding-top: 70px; padding-bottom: 100px; }
+.contact-page-card { position: relative; padding: clamp(28px, 5vw, 60px); overflow: hidden; border: 1px solid rgba(125,209,235,.2); border-radius: 28px; background: radial-gradient(circle at 85% 10%, rgba(255,111,47,.18), transparent 32%), linear-gradient(135deg, rgba(22,57,70,.94), rgba(7,17,23,.94)); box-shadow: var(--shadow); }
+.contact-page-card::after { content: 'P'; position: absolute; left: -13px; bottom: -81px; color: rgba(255,255,255,.035); font: 900 20rem/.8 var(--font-en); }
+.contact-page-card > * { position: relative; z-index: 1; }.contact-kicker { color: var(--orange-light); font-size: .78rem; font-weight: 700; }.contact-page-card h1 { font-size: clamp(3.5rem, 6vw, 6.5rem); line-height: .95; margin: 18px 0 24px; }.contact-page-card > p:not(.contact-kicker) { max-width: 540px; color: var(--muted); font-size: .87rem; }
+.contact-number-card { display: flex; flex-direction: column; gap: 5px; width: fit-content; margin: 28px 0 17px; padding: 16px 22px; border-right: 3px solid var(--orange); border-radius: 9px; background: rgba(0,0,0,.18); }.contact-number-card span { color: var(--muted); font-size: .66rem; }.contact-number-card b { color: #fff; direction: ltr; font: 800 clamp(1.35rem, 3vw, 2.1rem) var(--font-en); letter-spacing: .06em; }.call-now-button { min-width: 220px; }.contact-page-card small { display: block; margin-top: 13px; color: var(--muted-2); font-size: .62rem; }
+.contact-page-art { position: relative; display: grid; min-height: 470px; place-items: center; overflow: hidden; border: 1px solid rgba(114,218,245,.2); border-radius: 50%; background: radial-gradient(circle at 50% 50%, rgba(48,200,255,.2), transparent 35%), linear-gradient(135deg, #123543, #071116); }.contact-symbol { display: grid; place-items: center; width: 170px; height: 170px; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; background: linear-gradient(135deg, var(--orange), #db4b1e); color: white; font-size: 5rem; box-shadow: 0 0 0 20px rgba(255,111,47,.06), 0 25px 50px rgba(0,0,0,.35); }.contact-page-art > span { position: absolute; bottom: 43px; color: rgba(225,247,250,.6); font: 700 .7rem/1.8 var(--font-en); letter-spacing: .18em; text-align: center; direction: ltr; }.contact-orbit { position:absolute; border: 1px dashed rgba(132,225,244,.35); border-radius: 50%; }.contact-orbit.one { width: 78%; height: 78%; }.contact-orbit.two { width: 110%; height: 110%; }
+@media (max-width: 760px) { .contact-page-hero { grid-template-columns: 1fr; padding-top: 40px; }.contact-page-art { min-height: 310px; border-radius: 24px; }.contact-symbol { width: 120px; height: 120px; font-size: 3.7rem; }.contact-page-card h1 { font-size: 3.6rem; } }
+
+/* Vazirmatn — the site's unified Persian typeface */
+@font-face { font-family: 'Vazirmatn Local'; src: url('assets/fonts/vazirmatn-400.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Vazirmatn Local'; src: url('assets/fonts/vazirmatn-500.ttf') format('truetype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Vazirmatn Local'; src: url('assets/fonts/vazirmatn-600.ttf') format('truetype'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Vazirmatn Local'; src: url('assets/fonts/vazirmatn-700.ttf') format('truetype'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Vazirmatn Local'; src: url('assets/fonts/vazirmatn-800.ttf') format('truetype'); font-weight: 800; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Vazirmatn Local'; src: url('assets/fonts/vazirmatn-900.ttf') format('truetype'); font-weight: 900; font-style: normal; font-display: swap; }
+:root { --font-fa: 'Vazirmatn Local', Vazirmatn, Tahoma, sans-serif; }
+
+/* Distinctive Persian display face for the main campaign line */
+
+/* Formal, consistent title treatment — Vazirmatn replaces the display typeface everywhere */
+h1, h2, h3,
+.hero-copy h1,
+.section-heading h2,
+.contact-page-card h1,
+.blog-hero-copy h1,
+.coaches-hero-copy h1,
+.post-hero-copy h1 {
+  font-family: 'Vazirmatn Local', Vazirmatn, Tahoma, sans-serif;
+  font-weight: 900;
+  letter-spacing: -.065em;
+  line-height: 1.16;
+  text-shadow: 0 1px 0 rgba(255,255,255,.11), 0 3px 0 rgba(8,31,40,.72), 0 10px 20px rgba(0,0,0,.24);
+}
+.hero-copy h1 { line-height: 1.08; }
+/* Unified premium icon language: crisp line-style tokens instead of mixed visual treatments */
+.feature-icon, .quick-nav-icon, .stat-icon, .empty-emblem, .modal-mark,
+.coach-cta-mark, .directory-cta-mark, .blog-newsletter-mark, .roster-note-mark,
+.contact-symbol {
+  border: 1px solid rgba(157,225,240,.34);
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(45,112,134,.48), rgba(8,25,33,.86));
+  box-shadow: inset 0 1px rgba(255,255,255,.14), 0 10px 22px rgba(0,0,0,.2);
+}
+.feature-icon, .quick-nav-icon, .stat-icon, .empty-emblem, .modal-mark {
+  color: #b7f1ff;
+}
+.feature-icon.orange-icon, .quick-orange .quick-nav-icon, .modal-mark {
+  border-color: rgba(255,150,107,.55);
+  background: linear-gradient(145deg, #ee6732, #a93820);
+  color: #fff;
+}
+.feature-icon.blue-icon, .quick-blue .quick-nav-icon {
+  background: linear-gradient(145deg, #237fa7, #123c56);
+  color: #e8fbff;
+}
+.icon-button, .menu-button, .play-icon {
+  border-color: rgba(157,225,240,.30);
+  box-shadow: inset 0 1px rgba(255,255,255,.1), 0 7px 16px rgba(0,0,0,.16);
+}
+.hero-copy h1.hero-slogan em {
+  color: #ff6f2f;
+  background: none;
+  -webkit-text-fill-color: #ff6f2f;
+  text-shadow: 0 2px 0 rgba(255,213,190,.28), 0 4px 0 #9d3718, 0 13px 22px rgba(255,111,47,.28);
+}
+
+/* Clean sky-blue title accent: no gradient/fade */
+:root { --sky-title: #62d9ff; }
+h1 span, h2 span,
+.section-heading h2 span,
+.hero-copy h1 span {
+  color: var(--sky-title);
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: var(--sky-title);
+  text-shadow: 0 2px 0 rgba(210,248,255,.18), 0 4px 0 rgba(15,94,124,.60), 0 11px 20px rgba(33,180,225,.22);
+}
+.new-team-categories { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+.new-team-categories a { position:relative; min-height:190px; padding:22px; overflow:hidden; border:1px solid var(--line); border-radius:16px; color:var(--text); background:linear-gradient(145deg,rgba(28,67,82,.86),rgba(8,20,27,.9)); text-decoration:none; transition:.25s; }
+.new-team-categories a:hover { transform:translateY(-6px); border-color:var(--orange); background:linear-gradient(145deg,rgba(42,106,127,.96),rgba(10,25,33,.95)); }.new-team-categories b { color:var(--orange-light); font:800 .72rem var(--font-en); }.new-team-categories h3 { margin:34px 0 3px; font-size:1.4rem; }.new-team-categories small { color:var(--muted); font-size:.65rem; }.new-team-categories i { position:absolute; left:18px; bottom:16px; color:var(--sky-title); font-style:normal; }
+@media(max-width:900px){.new-team-categories{grid-template-columns:repeat(2,1fr)}} @media(max-width:520px){.new-team-categories{grid-template-columns:1fr}.new-team-categories a{min-height:130px}.new-team-categories h3{margin:20px 0 3px}}
+.gender-roster{padding:42px 0;border-top:1px solid var(--line)}.gender-roster+.gender-roster{margin-top:28px}.roster-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.team-gallery{margin-top:42px;padding:25px;border:1px solid var(--line);border-radius:18px;background:rgba(12,31,41,.46)}.team-gallery h3{font-size:1.4rem}.team-gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.team-gallery-grid figure{position:relative;margin:0;min-height:180px;overflow:hidden;border-radius:12px}.team-gallery-grid img{width:100%;height:100%;object-fit:cover}.team-gallery-grid figcaption{position:absolute;right:0;bottom:0;left:0;padding:28px 12px 10px;background:linear-gradient(transparent,rgba(2,10,14,.9));font-size:.67rem}@media(max-width:760px){.roster-grid,.team-gallery-grid{grid-template-columns:1fr}}
+.admin-team-gallery{margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}.admin-team-gallery h3{margin:5px 0;font-size:1.25rem}.gallery-upload-form{display:grid;grid-template-columns:1fr 1.5fr auto;gap:9px;margin:15px 0}.gallery-upload-form input{min-height:42px;padding:8px;border:1px solid var(--line);border-radius:7px;background:#0a1920;color:#dceff2}@media(max-width:650px){.gallery-upload-form{grid-template-columns:1fr}.gallery-upload-form .button{width:100%}}
+/* Team directory entrance: championship image + large Pishro mark */
+.teams-entry-hero { display:grid; grid-template-columns:1fr 1fr; gap:clamp(30px,7vw,105px); align-items:center; min-height:550px; padding-top:65px; padding-bottom:54px; }.teams-entry-hero .directory-hero-copy { max-width:580px; }.teams-entry-hero .directory-hero-copy .button { margin-top:14px; }.teams-hero-visual { position:relative; min-height:500px; overflow:hidden; border:1px solid rgba(126,222,244,.27); border-radius:28px; background:#0d252e; box-shadow:0 30px 70px rgba(0,0,0,.35); }.teams-hero-photo { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:saturate(1.08) contrast(1.05); }.teams-hero-shade { position:absolute; inset:0; background:linear-gradient(130deg,rgba(4,15,20,.12),rgba(4,15,20,.82)),linear-gradient(0deg,rgba(3,12,16,.75),transparent 48%); }.teams-logo-monument { position:absolute; z-index:1; top:50%; left:50%; display:grid; width:min(72%,330px); aspect-ratio:1; place-items:center; transform:translate(-50%,-50%); border:1px solid rgba(255,255,255,.27); border-radius:50%; background:radial-gradient(circle,rgba(255,117,54,.22),rgba(7,25,32,.22) 61%,transparent 62%); box-shadow:0 0 0 22px rgba(255,255,255,.045),0 0 70px rgba(255,111,47,.3); }.teams-logo-monument img { width:80%; height:80%; object-fit:contain; filter:drop-shadow(0 12px 20px rgba(0,0,0,.52)); }.teams-hero-caption { position:absolute; z-index:2; right:26px; bottom:24px; color:#dff9ff; font:700 .65rem var(--font-en); letter-spacing:.16em; direction:ltr; }.teams-hero-badge { position:absolute; z-index:2; top:22px; left:22px; padding:10px 13px; border:1px solid rgba(255,255,255,.25); border-radius:9px; background:rgba(3,15,20,.48); color:#ffb287; font:700 .58rem/1.5 var(--font-en); letter-spacing:.12em; direction:ltr; }.teams-hero-badge b { color:#e7faff; font-size:.9rem; }
+@media(max-width:800px){.teams-entry-hero{grid-template-columns:1fr;min-height:auto;padding-top:35px}.teams-hero-visual{min-height:360px}.teams-logo-monument{width:210px}.teams-entry-hero .directory-hero-copy{max-width:none}}
+/* Immersive team photo album */
+.team-moments{padding-top:88px;padding-bottom:105px}.pishro-mosaic{display:grid;grid-template-columns:1.25fr 1fr 1fr;grid-template-rows:210px 210px;gap:13px}.mosaic-tile{position:relative;min-width:0;overflow:hidden;padding:0;border:1px solid rgba(160,225,240,.17);border-radius:16px;background:#0c2029;cursor:zoom-in}.mosaic-tile.mosaic-main{grid-row:span 2}.mosaic-tile.mosaic-wide{grid-column:span 2}.mosaic-tile img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.75,.2,1),filter .45s;filter:saturate(.98) contrast(1.05)}.mosaic-tile::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(3,12,16,.9),transparent 58%);transition:.35s}.mosaic-tile:hover img{transform:scale(1.1);filter:saturate(1.22) contrast(1.08)}.mosaic-tile:hover::after{background:linear-gradient(0deg,rgba(255,94,41,.43),transparent 68%)}.mosaic-tile span{position:absolute;z-index:1;right:18px;bottom:15px;display:grid;gap:1px;color:white;text-align:right}.mosaic-tile b{font:800 .65rem var(--font-en);letter-spacing:.12em;direction:ltr}.mosaic-tile small{color:#c4eaf2;font-size:.67rem}.pishro-lightbox{position:fixed;z-index:100;inset:0;display:grid;place-content:center;gap:12px;padding:28px;opacity:0;visibility:hidden;background:rgba(2,9,12,.91);backdrop-filter:blur(14px);transition:.25s}.pishro-lightbox.open{opacity:1;visibility:visible}.pishro-lightbox img{max-width:min(920px,90vw);max-height:76vh;border:1px solid rgba(190,240,250,.3);border-radius:17px;box-shadow:0 30px 90px #000}.pishro-lightbox p{margin:0;color:#e9f9fc;text-align:center;font-size:.8rem}.pishro-lightbox-close{position:fixed;top:25px;left:28px;width:42px;height:42px;border:1px solid rgba(255,255,255,.28);border-radius:50%;background:rgba(255,255,255,.07);color:#fff;font-size:1.7rem;cursor:pointer}@media(max-width:700px){.pishro-mosaic{grid-template-columns:1fr 1fr;grid-template-rows:190px 170px 170px}.mosaic-tile.mosaic-main{grid-row:span 2}.mosaic-tile.mosaic-wide{grid-column:span 2}}
+.teams-logo-monument{animation:logoFloat 5s ease-in-out infinite}.teams-hero-visual::before{content:'';position:absolute;z-index:1;inset:-35%;background:conic-gradient(from 0deg,transparent,rgba(89,217,255,.25),transparent,rgba(255,111,47,.22),transparent);animation:logoSpin 13s linear infinite}.teams-logo-monument img{position:relative;z-index:2}@keyframes logoFloat{50%{transform:translate(-50%,-54%) scale(1.025)}}@keyframes logoSpin{to{transform:rotate(360deg)}}
+/* Team imagery throughout the homepage */
+.new-team-categories .team-photo-link{isolation:isolate}.team-photo-link>img{position:absolute;z-index:-2;inset:0;width:100%;height:100%;object-fit:cover;opacity:.52;filter:saturate(.9) contrast(1.06);transition:transform .65s ease,opacity .3s}.team-photo-link::after{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(0deg,rgba(4,14,19,.94),rgba(5,18,24,.2));transition:.3s}.team-photo-link:hover>img{transform:scale(1.1);opacity:.78}.team-photo-link:hover::after{background:linear-gradient(0deg,rgba(4,14,19,.84),rgba(255,111,47,.13))}
+.players-showcase{position:relative;display:grid;min-height:355px;align-items:end;overflow:hidden;margin-bottom:30px;border:1px solid rgba(143,223,244,.25);border-radius:24px;background:#0c222b;box-shadow:var(--shadow)}.players-showcase>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 36%;filter:saturate(1.06) contrast(1.03)}.players-showcase-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,13,18,.94),rgba(3,13,18,.38) 62%,rgba(3,13,18,.12)),linear-gradient(0deg,rgba(3,13,18,.58),transparent)}.players-showcase-copy{position:relative;z-index:1;max-width:520px;padding:42px}.players-showcase-copy h2{margin:12px 0;font-size:clamp(2.7rem,5vw,5rem);line-height:1}.players-showcase-copy p{margin:0;color:#c5dce2;font-size:.75rem}.players-showcase-label{position:absolute;z-index:1;left:30px;bottom:27px;color:#e5fbff;font:800 .8rem/1.45 var(--font-en);letter-spacing:.16em;text-align:left;direction:ltr}@media(max-width:600px){.players-showcase{min-height:420px}.players-showcase-overlay{background:linear-gradient(0deg,rgba(3,13,18,.95),rgba(3,13,18,.15))}.players-showcase-copy{padding:27px}.players-showcase-label{top:20px;bottom:auto;left:20px}}
+#teamCategories .new-team-categories>a{isolation:isolate;background:#092029}#teamCategories .new-team-categories>a::before{content:'';position:absolute;z-index:-2;inset:0;background-size:cover;background-position:center;opacity:.5;transition:transform .65s ease,opacity .3s}#teamCategories .new-team-categories>a::after{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(0deg,rgba(3,13,18,.96),rgba(3,13,18,.14))}#teamCategories .new-team-categories>a:hover::before{transform:scale(1.1);opacity:.82}#teamCategories .new-team-categories>a:nth-child(1)::before{background-image:url('assets/gallery/team-novice.webp')}#teamCategories .new-team-categories>a:nth-child(2)::before{background-image:url('assets/gallery/team-teen.webp')}#teamCategories .new-team-categories>a:nth-child(3)::before{background-image:url('assets/gallery/team-youth.webp')}#teamCategories .new-team-categories>a:nth-child(4)::before{background-image:url('assets/gallery/team-adult.webp')}#teamCategories .new-team-categories>a:nth-child(5)::before{background-image:url('assets/gallery/team-new.webp')}
+.club-archive{padding-top:45px;padding-bottom:110px}.club-archive-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.club-archive-photo{position:relative;aspect-ratio:1/1.12;overflow:hidden;padding:0;border:1px solid var(--line);border-radius:14px;background:#0d222b;cursor:zoom-in}.club-archive-photo img{width:100%;height:100%;object-fit:cover;object-position:center center;transition:transform .55s ease,filter .35s}.club-archive-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(3,12,16,.5),transparent);transition:.3s}.club-archive-photo span{position:absolute;z-index:2;top:50%;left:50%;display:grid;width:42px;height:42px;place-items:center;opacity:0;transform:translate(-50%,-42%);border:1px solid rgba(255,255,255,.55);border-radius:50%;background:rgba(3,15,20,.56);color:#fff;transition:.3s}.club-archive-photo:hover img{transform:scale(1.09);filter:saturate(1.15)}.club-archive-photo:hover::after{background:rgba(255,111,47,.2)}.club-archive-photo:hover span{opacity:1;transform:translate(-50%,-50%)}@media(max-width:800px){.club-archive-grid{grid-template-columns:repeat(2,1fr)}}
+/* Individual gender-team title image, before each roster */
+.team-section-hero{position:relative;min-height:340px;overflow:hidden;margin:0 0 28px;border:1px solid rgba(135,221,243,.24);border-radius:20px;background:#0b2029}.team-section-hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;filter:saturate(1.08) contrast(1.04)}.team-section-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,14,19,.92),rgba(3,14,19,.24) 70%),linear-gradient(0deg,rgba(3,14,19,.52),transparent)}.team-section-copy{position:relative;z-index:1;max-width:500px;padding:48px}.team-section-copy h2{margin:10px 0 12px;font-size:clamp(2.5rem,5vw,4.8rem);line-height:1}.team-section-copy p{margin:0;color:#c8e1e7;font-size:.74rem}.team-section-number{position:absolute;z-index:1;left:30px;bottom:22px;color:rgba(224,249,255,.88);font:800 .8rem var(--font-en);letter-spacing:.16em;direction:ltr}@media(max-width:620px){.team-section-hero{min-height:370px}.team-section-shade{background:linear-gradient(0deg,rgba(3,14,19,.96),rgba(3,14,19,.16))}.team-section-copy{padding:30px 24px;position:absolute;bottom:0}.team-section-number{top:22px;bottom:auto}}
+/* Fill the team-page entry with the Pishro mark instead of empty visual space */
+.roster-hero{min-height:500px;padding-top:45px}.roster-hero-image{min-height:400px}.roster-hero-image>img{min-height:400px}.roster-logo-seal{position:absolute;z-index:2;top:50%;left:50%;display:grid;width:clamp(125px,24vw,210px);aspect-ratio:1;place-items:center;transform:translate(-50%,-50%);border:1px solid rgba(255,255,255,.35);border-radius:50%;background:radial-gradient(circle,rgba(255,111,47,.25),rgba(4,18,25,.25) 65%);box-shadow:0 0 0 15px rgba(255,255,255,.06),0 15px 45px rgba(0,0,0,.45);animation:rosterSealFloat 5s ease-in-out infinite}.roster-logo-seal img{width:78%;height:78%;min-height:0;object-fit:contain;filter:drop-shadow(0 8px 13px rgba(0,0,0,.45))}@keyframes rosterSealFloat{50%{transform:translate(-50%,-55%) scale(1.04)}}@media(max-width:760px){.roster-hero{min-height:auto;padding-top:30px}.roster-hero-image,.roster-hero-image>img{min-height:310px}}
+/* The team page begins immediately with its two compact gender sections. */
+#rosterApp>.roster-hero,#rosterApp>.roster-metrics{display:none}.roster-section{padding-top:42px}.gender-roster:first-child{border-top:0;padding-top:0}.team-section-hero{min-height:275px;margin-bottom:22px}.team-section-copy{padding:34px}.team-section-copy h2{font-size:clamp(2.25rem,4vw,3.9rem)}@media(max-width:620px){.roster-section{padding-top:24px}.team-section-hero{min-height:310px}.team-section-copy{padding:24px}}
+/* Supplied skate image as the consultation background */
+.gear-panel{background:linear-gradient(90deg,rgba(5,14,18,.34),rgba(5,14,18,.9) 62%),url('assets/gallery/skate-consultation-bg.webp') center center/cover no-repeat !important}.gear-panel .gear-glow{background:radial-gradient(circle,rgba(42,193,255,.14),transparent 65%)}.gear-panel .gear-copy{position:relative;z-index:2}.gear-panel .skate-display{display:none}
+@media(max-width:720px){.gear-panel{background:linear-gradient(0deg,rgba(5,14,18,.93),rgba(5,14,18,.3)),url('assets/gallery/skate-consultation-bg.webp') center center/cover no-repeat !important}}
+.glass-feature{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(0deg,rgba(5,18,24,.85),rgba(5,18,24,.18)),url('assets/gallery/ages-3-to-60.webp') center center/cover no-repeat !important}.glass-feature::before{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(135deg,rgba(9,28,36,.3),rgba(255,111,47,.12))}.glass-feature>*{position:relative;z-index:1}

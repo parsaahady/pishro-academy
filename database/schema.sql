@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS admins (
 CREATE TABLE IF NOT EXISTS teams (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     slug VARCHAR(50) NOT NULL,
+    category_key VARCHAR(30) NULL,
+    gender ENUM('women','men') NULL,
     name VARCHAR(100) NOT NULL,
     english_name VARCHAR(100) NOT NULL,
     age_range VARCHAR(100) NOT NULL,
@@ -25,7 +27,20 @@ CREATE TABLE IF NOT EXISTS teams (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE KEY uq_teams_slug (slug),
-    KEY idx_teams_active_order (is_active, sort_order)
+    KEY idx_teams_active_order (is_active, sort_order),
+    KEY idx_teams_category_gender (category_key, gender, is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS team_gallery_images (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    team_id INT UNSIGNED NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    caption VARCHAR(280) NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_team_gallery (team_id, sort_order, id),
+    CONSTRAINT fk_team_gallery_team FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS players (
@@ -123,20 +138,14 @@ CREATE TABLE IF NOT EXISTS contact_messages (
     KEY idx_contact_status_created (status, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO teams (slug, name, english_name, age_range, discipline, image_path, sort_order)
+INSERT INTO teams (slug, category_key, gender, name, english_name, age_range, discipline, image_path, sort_order)
 VALUES
-    ('kids', 'ببرهای کوچک', 'LITTLE TIGERS', '۶ تا ۹ سال', 'اسکیت هاکی', 'assets/gallery/team-kids.png', 1),
-    ('junior', 'نوجوانان پیشرو', 'JUNIOR SQUAD', '۱۰ تا ۱۵ سال', 'اسکیت هاکی', 'assets/gallery/team-junior-action.jpg', 2),
-    ('women', 'بانوان پیشرو', 'WOMEN SQUAD', 'رده بانوان', 'هاکی روی یخ', 'assets/gallery/team-women.png', 3),
-    ('adult', 'تیم بزرگسالان', 'ADULT SQUAD', '۱۶ سال به بالا', 'هاکی روی یخ', 'assets/gallery/team-champions.jpg', 4),
-    ('pro', 'مسیر قهرمانی', 'PRO PATH', 'استعدادیابی', 'اسکیت هاکی و هاکی روی یخ', 'assets/gallery/ice-action.jpg', 5)
-ON DUPLICATE KEY UPDATE
-    name = VALUES(name),
-    english_name = VALUES(english_name),
-    age_range = VALUES(age_range),
-    discipline = VALUES(discipline),
-    image_path = VALUES(image_path),
-    sort_order = VALUES(sort_order);
+    ('novice-women','novice','women','نونهالان بانوان','NOVICE / WOMEN','نونهالان','اسکیت و هاکی','assets/gallery/team-kids.png',101), ('novice-men','novice','men','نونهالان آقایان','NOVICE / MEN','نونهالان','اسکیت و هاکی','assets/gallery/team-kids.png',102),
+    ('teen-women','teen','women','نوجوانان بانوان','TEEN / WOMEN','نوجوانان','اسکیت و هاکی','assets/gallery/team-junior-action.jpg',201), ('teen-men','teen','men','نوجوانان آقایان','TEEN / MEN','نوجوانان','اسکیت و هاکی','assets/gallery/team-junior-action.jpg',202),
+    ('youth-women','youth','women','جوانان بانوان','YOUTH / WOMEN','جوانان','اسکیت و هاکی','assets/gallery/team-women.png',301), ('youth-men','youth','men','جوانان آقایان','YOUTH / MEN','جوانان','اسکیت و هاکی','assets/gallery/team-champions.jpg',302),
+    ('adult-women','adult','women','بزرگسالان بانوان','ADULT / WOMEN','بزرگسالان','اسکیت و هاکی','assets/gallery/team-women.png',401), ('adult-men','adult','men','بزرگسالان آقایان','ADULT / MEN','بزرگسالان','اسکیت و هاکی','assets/gallery/team-champions.jpg',402),
+    ('new-women','new','women','ورزشکاران تازه بانوان','NEW ATHLETES / WOMEN','ورزشکاران تازه','اسکیت و هاکی','assets/gallery/open-rink.jpg',501), ('new-men','new','men','ورزشکاران تازه آقایان','NEW ATHLETES / MEN','ورزشکاران تازه','اسکیت و هاکی','assets/gallery/open-rink.jpg',502)
+ON DUPLICATE KEY UPDATE name=VALUES(name), english_name=VALUES(english_name), age_range=VALUES(age_range), discipline=VALUES(discipline), image_path=VALUES(image_path), sort_order=VALUES(sort_order);
 
 CREATE TABLE IF NOT EXISTS rate_limits (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
