@@ -24,6 +24,20 @@ menuToggle?.addEventListener('click', () => {
 });
 $$('.main-nav a').forEach((link) => link.addEventListener('click', () => mainNav?.classList.remove('open')));
 
+function observeReveals() {
+  const targets = $$('.reveal').filter((el) => !el.classList.contains('is-visible'));
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach((el) => el.classList.add('is-visible'));
+    return;
+  }
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) { entry.target.classList.add('is-visible'); obs.unobserve(entry.target); }
+    });
+  }, { threshold: .08 });
+  targets.forEach((el) => observer.observe(el));
+}
+
 function notFound(message) {
   app.innerHTML = `<section class="section player-profile-notfound"><div class="empty-emblem">✦</div><h2>بازیکن پیدا نشد</h2><p>${escapeHTML(message)}</p><a class="button button-primary" href="teams.html">بازگشت به تیم‌ها <span>←</span></a></section>`;
   document.title = 'بازیکن پیدا نشد | پیشرو هاکی';
@@ -84,14 +98,7 @@ function renderPlayer(player) {
     </section>
   `;
 
-  $$('.reveal').forEach((element) => {
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) { entry.target.classList.add('is-visible'); obs.unobserve(entry.target); }
-      });
-    }, { threshold: .08 });
-    observer.observe(element);
-  });
+  observeReveals();
 }
 
 async function loadPlayer() {
@@ -101,7 +108,17 @@ async function loadPlayer() {
   }
   try {
     const response = await PishroAPI.getPublicPlayer(playerId);
-    renderPlayer(response.player);
+    const player = response && response.player;
+    if (!player) {
+      notFound('این بازیکن وجود ندارد یا هنوز منتشر نشده است.');
+      return;
+    }
+    try {
+      renderPlayer(player);
+    } catch (renderError) {
+      console.error(renderError);
+      notFound('در نمایش اطلاعات این بازیکن مشکلی پیش آمد.');
+    }
   } catch (error) {
     console.error(error);
     notFound('این بازیکن وجود ندارد یا هنوز منتشر نشده است.');

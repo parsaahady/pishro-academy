@@ -3,18 +3,9 @@
  <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <meta name="theme-color" content="#071015" />
-  <meta name="description" content="تیم‌های پیشرو هاکی در قزوین؛ نونهالان، نوجوانان، جوانان و بزرگسالان، بانوان و آقایان." />
-  <link rel="canonical" href="https://pishrohockey.ir/teams.html" />
   <title>
-   تیم‌ها و بازیکنان | پیشرو هاکی قزوین
+   تیم‌ها | پیشرو
   </title>
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="پیشرو هاکی" />
-  <meta property="og:title" content="تیم‌ها و بازیکنان | پیشرو هاکی قزوین" />
-  <meta property="og:description" content="تیم‌های پیشرو هاکی در قزوین؛ نونهالان، نوجوانان، جوانان و بزرگسالان، بانوان و آقایان." />
-  <meta property="og:url" content="https://pishrohockey.ir/teams.html" />
-  <meta property="og:image" content="https://pishrohockey.ir/assets/gallery/pishro-logo.png" />
   <link href="styles.css" rel="stylesheet"/>
  </head>
  <body>
@@ -175,6 +166,50 @@
        </i>
       </a>
      </div>
+    </section>
+    <section class="section directory-section" id="teamDirectory">
+     <div class="section-heading split-heading reveal">
+      <div>
+       <div class="eyebrow">
+        PISHRO / TEAM DIRECTORY
+       </div>
+       <h2>
+        تیم‌های
+        <br/>
+        <span>
+         پیشرو.
+        </span>
+       </h2>
+      </div>
+      <p>
+       ده تیم فعال در پنج ردهٔ سنی؛ روی هر تیم بزنید تا وارد صفحهٔ اختصاصی و فهرست بازیکنان همان تیم شوید.
+      </p>
+     </div>
+     <div class="directory-filter reveal" id="teamDirectoryFilter">
+      <button class="directory-filter-button active" data-directory-filter="all" type="button">
+       همه
+      </button>
+      <button class="directory-filter-button" data-directory-filter="novice" type="button">
+       نونهالان
+      </button>
+      <button class="directory-filter-button" data-directory-filter="teen" type="button">
+       نوجوانان
+      </button>
+      <button class="directory-filter-button" data-directory-filter="youth" type="button">
+       جوانان
+      </button>
+      <button class="directory-filter-button" data-directory-filter="adult" type="button">
+       بزرگسالان
+      </button>
+      <button class="directory-filter-button" data-directory-filter="new" type="button">
+       ورزشکاران تازه
+      </button>
+     </div>
+     <div class="team-directory-grid reveal" id="teamDirectoryGrid">
+     </div>
+     <p class="roster-no-results" id="teamDirectoryEmpty" hidden="hidden">
+      هنوز تیمی ثبت نشده است.
+     </p>
     </section>
     <section class="section team-moments" id="gallery">
      <div class="section-heading split-heading reveal">
@@ -373,6 +408,8 @@
     </p>
    </div>
   </div>
+  <script src="api-client.js">
+  </script>
   <script src="teams.js">
   </script>
  </body>

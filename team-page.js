@@ -25,6 +25,26 @@ const numbers = { novice: '۰۱', teen: '۰۲', youth: '۰۳', adult: '۰۴', ne
 const menu = $('#menuToggle'), nav = $('#mainNav');
 menu?.addEventListener('click', () => nav.classList.toggle('open'));
 
+// Reveal-on-scroll. team.html marks its hero, heading, toolbar and metrics with
+// `.reveal` (opacity: 0 by default), so without this observer the whole page
+// stays invisible. Runs again after the roster is injected.
+function observeReveals() {
+  const targets = $$('.reveal').filter((el) => !el.classList.contains('is-visible'));
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach((el) => el.classList.add('is-visible'));
+    return;
+  }
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      obs.unobserve(entry.target);
+    });
+  }, { threshold: .08 });
+  targets.forEach((el) => observer.observe(el));
+}
+observeReveals();
+
 const genderLabel = (gender, category) => gender === 'women'
   ? (category === 'adult' ? 'بانوان' : 'دختران')
   : (category === 'adult' ? 'آقایان' : 'پسران');
@@ -141,6 +161,8 @@ async function load() {
       });
     });
   }
+
+  observeReveals();
 }
 
 load().catch((e) => console.error(e));
