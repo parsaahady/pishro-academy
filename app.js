@@ -40,6 +40,51 @@ loadHomePlayers();
 window.addEventListener('pishro-roster-updated', loadHomePlayers);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) loadHomePlayers(); });
 
+// Latest blog posts on the homepage.
+const homeBlogFeatured = $('#homeBlogFeatured');
+const homeBlogGrid = $('#homeBlogGrid');
+const homeBlogEmpty = $('#homeBlogEmpty');
+const homeBlogCount = $('#homeBlogCount');
+const blogCategoryLabels = { rules: 'قوانین بازی', gear: 'تجهیزات', skates: 'اسکیت و تمرین', training: 'آموزش', news: 'اخبار' };
+function formatBlogDate(value) {
+  if (!value) return '';
+  try {
+    return new Intl.DateTimeFormat('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })
+      .format(new Date(String(value).replace(' ', 'T') + 'Z'));
+  } catch (error) {
+    return String(value);
+  }
+}
+function renderHomeBlog(posts = []) {
+  if (homeBlogCount) homeBlogCount.textContent = faDigits(posts.length);
+  if (!posts.length) {
+    if (homeBlogFeatured) homeBlogFeatured.innerHTML = '';
+    if (homeBlogGrid) homeBlogGrid.innerHTML = '';
+    homeBlogEmpty?.classList.add('visible');
+    return;
+  }
+  homeBlogEmpty?.classList.remove('visible');
+  const [featured, ...rest] = posts;
+  if (homeBlogFeatured) {
+    homeBlogFeatured.innerHTML = `<a class="featured-blog-card" href="post.html?slug=${encodeURIComponent(featured.slug)}"><div class="featured-blog-image">${featured.cover_url ? `<img src="${escapeHTML(featured.cover_url)}" alt="${escapeHTML(featured.title)}" />` : ''}<span></span></div><div class="featured-blog-copy"><div class="blog-meta"><span>${blogCategoryLabels[featured.category] || 'پیشرو هاکی'}</span><small class="home-blog-date">${escapeHTML(formatBlogDate(featured.published_at || featured.created_at))}</small></div><h3>${escapeHTML(featured.title)}</h3><p>${escapeHTML(featured.excerpt || '')}</p><span class="blog-card-link">خواندن مطلب <b>←</b></span></div></a>`;
+  }
+  if (homeBlogGrid) {
+    homeBlogGrid.innerHTML = rest.slice(0, 3).map((post, index) => `<a class="blog-card" href="post.html?slug=${encodeURIComponent(post.slug)}"><div class="blog-card-image">${post.cover_url ? `<img src="${escapeHTML(post.cover_url)}" alt="${escapeHTML(post.title)}" />` : ''}<span class="blog-card-index">${faDigits(String(index + 2).padStart(2, '0'))}</span></div><div class="blog-card-body"><div class="blog-meta"><span>${blogCategoryLabels[post.category] || 'مطلب'}</span><small class="home-blog-date">${escapeHTML(formatBlogDate(post.published_at || post.created_at))}</small></div><h3>${escapeHTML(post.title)}</h3><p>${escapeHTML(post.excerpt || '')}</p><span class="blog-card-link">ادامه مطلب <b>←</b></span></div></a>`).join('');
+  }
+}
+async function loadHomeBlog() {
+  if ((!homeBlogFeatured && !homeBlogGrid) || !window.PishroAPI) return;
+  try {
+    const response = await PishroAPI.getBlogs({ limit: 4 });
+    renderHomeBlog(response.posts || []);
+  } catch (error) {
+    console.warn('Blog is not available yet.', error);
+    renderHomeBlog([]);
+  }
+}
+loadHomeBlog();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) loadHomeBlog(); });
+
 // Sticky header state
 const topbar = $('#topbar');
 const setHeaderState = () => topbar?.classList.toggle('scrolled', window.scrollY > 16);

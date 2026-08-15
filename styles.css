@@ -688,3 +688,9 @@ h1 span, h2 span,
 .admin-player-link { display: inline-flex; align-items: center; gap: 5px; margin: 0 0 10px; color: #9fdcea; font-size: .58rem; text-decoration: none; direction: rtl; }
 .admin-player-link:hover { color: var(--orange-light); }
 .admin-player-link span { font-family: var(--font-en); }
+
+/* Homepage: latest blog posts */
+.home-blog-section { padding-top: 112px; }
+.home-blog-featured { margin-bottom: 16px; }
+.blog-meta small.home-blog-date { font-family: var(--font-fa); font-weight: 500; font-size: .62rem; letter-spacing: 0; direction: rtl; }
+@media (max-width: 560px) { .home-blog-section { padding-top: 88px; } }
