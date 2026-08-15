@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#071015" />
+  <meta name="description" content="پروفایل بازیکن پیشرو هاکی" />
+  <title>بازیکن | پیشرو هاکی</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .player-profile-hero { min-height: 520px; display: grid; grid-template-columns: .95fr 1.05fr; align-items: center; gap: 48px; padding-top: 70px; }
+    .player-profile-copy { max-width: 560px; }
+    .player-profile-copy h1 { margin: 17px 0 14px; font-size: clamp(3rem, 6vw, 5.4rem); line-height: .98; }
+    .player-profile-copy > p { max-width: 480px; color: var(--muted); font-size: .85rem; line-height: 2; }
+    .player-profile-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 27px; }
+    .player-profile-actions .button { min-height: 48px; font-size: .72rem; }
+    .player-profile-photo { position: relative; min-height: 445px; overflow: hidden; border: 1px solid rgba(121,215,236,.24); border-radius: 24px 7px 24px 7px; background: #0b1e28; box-shadow: 25px 25px 70px rgba(0,0,0,.3); }
+    .player-profile-photo img { width: 100%; height: 100%; min-height: 445px; object-fit: cover; filter: saturate(1.14) contrast(1.05); }
+    .player-profile-photo .player-initials { min-height: 445px; }
+    .player-profile-photo .overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,13,17,.72), transparent 50%), linear-gradient(0deg, rgba(5,13,17,.6), transparent 45%); }
+    .player-profile-jersey { position: absolute; z-index: 2; left: 25px; top: 16px; color: rgba(255,255,255,.2); font: 900 6.5rem/.8 var(--font-en); direction: ltr; }
+    .player-profile-label { position: absolute; z-index: 2; right: 23px; bottom: 18px; color: rgba(238,249,250,.68); font: 600 .58rem var(--font-en); letter-spacing: .18em; direction: ltr; }
+    .player-profile-metrics { display: grid; grid-template-columns: repeat(5,1fr); padding: 22px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .player-profile-metrics > div { display: flex; flex-direction: column; align-items: center; gap: 4px; border-left: 1px solid var(--line); }
+    .player-profile-metrics > div:last-child { border-left: 0; }
+    .player-profile-metrics span { color: var(--muted-2); font-size: .64rem; }
+    .player-profile-metrics strong { color: #e0f5f7; font-size: .88rem; }
+    .player-profile-bio { padding-top: 100px; }
+    .player-profile-bio .bio-card { max-width: 860px; margin-top: 26px; padding: 28px 30px; border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(145deg, rgba(27,52,63,.62), rgba(8,18,25,.72)); }
+    .player-profile-bio .bio-card p { margin: 0; color: #cfe3e9; font-size: .82rem; line-height: 2.2; white-space: pre-line; }
+    .player-profile-notfound { padding: 120px 0 160px; text-align: center; }
+    .player-profile-notfound h2 { margin: 16px 0 10px; font-size: 2.6rem; }
+    .player-profile-notfound p { margin: 0 0 22px; color: var(--muted); font-size: .8rem; }
+    @media (max-width: 860px) { .player-profile-hero { grid-template-columns: 1fr; gap: 34px; min-height: auto; padding-top: 50px; } .player-profile-photo { min-height: 330px; } .player-profile-photo img, .player-profile-photo .player-initials { min-height: 330px; } .player-profile-metrics { grid-template-columns: repeat(3,1fr); gap: 18px 0; } .player-profile-metrics > div:nth-child(3) { border-left: 0; } }
+    @media (max-width: 560px) { .player-profile-copy h1 { font-size: 3rem; } .player-profile-metrics { grid-template-columns: repeat(2,1fr); } .player-profile-metrics > div:nth-child(2n) { border-left: 0; } .player-profile-metrics > div:nth-child(n+3) { border-top: 1px solid var(--line); padding-top: 16px; } }
+  </style>
+</head>
+<body class="roster-page-body">
+  <div class="noise"></div>
+  <div class="site-shell">
+    <header class="topbar" id="topbar">
+      <a class="brand" href="index.html" aria-label="بازگشت به پیشرو هاکی"><span class="brand-mark supplied-logo" aria-hidden="true"><img src="assets/gallery/pishro-logo.png" alt="" /></span><span class="brand-copy"><b>پیشرو</b></span></a>
+      <nav class="main-nav" id="mainNav" aria-label="ناوبری اصلی"><a href="index.html#academy">پیشرو هاکی</a><a href="index.html#programs">رشته‌های تخصصی</a><a class="active" href="teams.html">تیم‌ها و بازیکنان</a><a href="coaches.html">مربیان</a><a href="index.html#location">آدرس</a><a href="blog.html">وبلاگ</a><a href="contact.html">تماس با ما</a></nav>
+      <div class="topbar-actions"><button class="icon-button menu-button" id="menuToggle" aria-label="باز کردن منو" aria-expanded="false"><span></span><span></span><span></span></button><a class="text-button" href="index.html#contact">مشاوره <span>↗</span></a></div>
+    </header>
+
+    <main id="playerProfileApp"></main>
+
+    <footer class="footer"><div class="footer-brand"><span class="brand-mark small-mark supplied-logo"><img src="assets/gallery/pishro-logo.png" alt="" /></span><div><b>پیشرو هاکی</b><small>PISHRO HOCKEY</small></div></div><div class="footer-links"><a href="index.html#programs">رشته‌های تخصصی</a><a href="teams.html">تیم‌ها</a><a href="coaches.html">مربیان</a><a href="index.html#location">آدرس</a><a href="blog.html">وبلاگ</a><a href="admin.html">ورود مدیریت</a><a href="contact.html">تماس با ما</a></div><div class="footer-end"><span>© ۱۴۰۵ پیشرو هاکی</span><a href="#playerProfileApp">بازگشت به بالا ↑</a></div></footer>
+  </div>
+  <script src="api-client.js"></script>
+  <script src="player.js"></script>
+</body>
+</html>

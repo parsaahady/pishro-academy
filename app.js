@@ -23,7 +23,7 @@ function renderHomePlayers(players = []) {
     const number = player.jersey_number !== null && player.jersey_number !== undefined ? faDigits(player.jersey_number) : '—';
     const age = player.age ? `${faDigits(player.age)} سال` : '—';
     const exp = `${faDigits(player.years_active || 0)} سال سابقه`;
-    return `<a class="home-player-card" href="team.html?team=${encodeURIComponent(player.team_slug)}"><div class="home-player-image">${visual}<span class="home-player-number">${number}</span><span class="home-player-position">${escapeHTML(player.position || 'بازیکن')}</span></div><div class="home-player-body"><div class="home-player-team">${escapeHTML(player.team_name)} · ${escapeHTML(player.team_age_range)}</div><h3>${escapeHTML(player.name)}</h3><div class="home-player-meta"><span>${age}</span><span>${escapeHTML(exp)}</span></div><span class="home-player-link">مشاهده پروفایل <b>←</b></span></div></a>`;
+    return `<a class="home-player-card" href="player.html?id=${encodeURIComponent(player.id)}"><div class="home-player-image">${visual}<span class="home-player-number">${number}</span><span class="home-player-position">${escapeHTML(player.position || 'بازیکن')}</span></div><div class="home-player-body"><div class="home-player-team">${escapeHTML(player.team_name)} · ${escapeHTML(player.team_age_range)}</div><h3>${escapeHTML(player.name)}</h3><div class="home-player-meta"><span>${age}</span><span>${escapeHTML(exp)}</span></div><span class="home-player-link">مشاهده پروفایل <b>←</b></span></div></a>`;
   }).join('');
 }
 async function loadHomePlayers() {

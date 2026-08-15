@@ -59,6 +59,7 @@
     getTeamGallery: (team) => request(`public/team-gallery.php${query({ team })}`),
     getStats: () => request(`public/stats.php`),
     getPublicPlayers: (params = {}) => request(`public/players.php${query(params)}`),
+    getPublicPlayer: (id) => request(`public/player.php${query({ id })}`),
     getBlogs: (params = {}) => request(`public/blogs.php${query(params)}`),
     submitComment: (data) => request('public/comments.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }),
     getCoaches: () => request('public/coaches.php'),
