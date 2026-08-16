@@ -16,6 +16,16 @@ function make_slug(string $value): string
 function safe_blog_html(string $html): string
 {
     $allowedTags = '<p><h2><h3><h4><strong><em><b><i><ul><ol><li><blockquote><a><br><hr>';
+
+    // The contenteditable editor wraps each typed line in <div> and uses <br>
+    // for soft breaks. <div> is not an allowed tag, so convert the line
+    // structure to <br> (a real line break) BEFORE sanitisation strips the
+    // divs. Doing it as tags (not newlines) means line breaks survive even
+    // when the content also contains inline tags like <b> or block tags like
+    // <blockquote>.
+    $html = preg_replace('/<div[^>]*>/i', '', $html) ?? $html;
+    $html = preg_replace('/<\/div>/i', '<br>', $html) ?? $html;
+
     $html = strip_tags($html, $allowedTags);
     $html = preg_replace('/<(script|style|iframe|object|embed|form|input|button)[^>]*>.*?<\/\1>/is', '', $html) ?? $html;
     $html = preg_replace_callback('/<([a-z0-9]+)([^>]*)>/i', static function (array $match): string {
@@ -30,6 +40,18 @@ function safe_blog_html(string $html): string
         return '<' . $tag . '>';
     }, $html) ?? $html;
     $html = preg_replace('/javascript\s*:/i', '', $html) ?? $html;
+    // Plain-text newlines (from a textarea or pasted text) become <br>.
+    // Genuine block-structured HTML (p/h2/ul/li/blockquote...) treats any
+    // remaining newlines as formatting whitespace, so strip them instead of
+    // injecting stray <br>s. Inline tags (<b>, <strong>, <a>...) do NOT count
+    // as structure, so text with inline formatting still keeps its line breaks.
+    if (preg_match('/<(p|h[2-4]|ul|ol|li|blockquote|hr)\b[^>]*>/i', $html)) {
+        $html = preg_replace('/[ \t]*[\r\n]+[ \t]*/', '', $html) ?? $html;
+    } else {
+        $html = str_replace(["\r\n", "\r", "\n"], '<br>', $html);
+    }
+    // Tidy up trailing line breaks left by a final </div>.
+    $html = preg_replace('/(?:<br>)+$/', '', $html) ?? $html;
     return trim($html);
 }
 
